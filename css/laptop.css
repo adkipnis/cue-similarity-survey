@@ -1,0 +1,57 @@
+img.adaptive {
+	width: 230px;
+	margin: 10px 10px 10px 10px;
+	/* border: 2px solid #000; */
+}
+
+p {
+	font-family: "Open Sans", "Arial", sans-serif;
+	font-size: 18px;
+	font-weight: normal;
+	margin-bottom: 0;
+	margin-top: 0;
+	margin-left: 5%;
+	margin-right: 5%;
+	text-align: justify;
+	line-height: 30px;
+}
+
+li {
+  font-family: "Open Sans", "Arial", sans-serif;
+  font-size: 18px;
+  font-weight: normal;
+  margin-bottom: 0;
+  margin-top: 0;
+  margin-left: 5%;
+  margin-right: 5%;
+  text-align: justify;
+  line-height: 28px;
+}
+
+h4 {
+  font-family: "Open Sans", "Arial", sans-serif;
+  font-size: 18px;
+  font-weight: normal;
+  margin-bottom: 0;
+  margin-top: 0;
+  text-align: justify;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+label {
+  font-family: "Open Sans", "Arial", sans-serif;
+  font-size: 18px;
+  font-weight: normal;
+  margin-bottom: 0;
+  margin-top: 0;
+  margin-left: 5%;
+  margin-right: 5%;
+  text-align: left;
+  line-height: 35px;
+}
+
+.container {
+	width: 200%; 
+	transform: translateX(-25%);
+}
