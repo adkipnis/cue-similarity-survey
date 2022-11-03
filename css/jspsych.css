@@ -1,0 +1,319 @@
+/*
+ * CSS for jsPsych experiments.
+ *
+ * This stylesheet provides minimal styling to make jsPsych
+ * experiments look polished without any additional styles.
+ */
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700);
+
+#jspsych-image-button-response-stimulus {
+  width: 20%;
+  height: width;
+  border: 2px solid #000;
+  position: absolute;
+  left: 40%;
+  top: 5%;
+}
+
+/* Container holding jsPsych content */
+
+.jspsych-display-element {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.jspsych-display-element:focus {
+  outline: none;
+}
+
+.jspsych-content-wrapper {
+  display: flex;
+  margin: auto;
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+.jspsych-content {
+  max-width: 90%;
+  /* this is mainly an IE 10-11 fix */
+  text-align: center;
+  margin: auto;
+  /* this is for overflowing content */
+}
+
+.jspsych-top {
+  align-items: flex-start;
+}
+
+.jspsych-middle {
+  align-items: center;
+}
+
+/* fonts and type */
+
+.jspsych-display-element {
+  font-family: "Open Sans", "Arial", sans-serif;
+  font-size: 18px;
+  line-height: 1.6em;
+}
+
+/* Form elements like input fields and buttons */
+
+.jspsych-display-element input[type="text"] {
+  font-family: "Open Sans", "Arial", sans-serif;
+  font-size: 18px;
+}
+
+.jspsych-display-element input[type="radio"] {
+  font-family: "Open Sans", "Arial", sans-serif;
+  font-size: 18px;
+}
+
+/* borrowing Bootstrap style for btn elements, but combining styles a bit */
+.jspsych-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin: 5px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: "Open Sans", "Arial", sans-serif;
+  cursor: pointer;
+  line-height: 1.4;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+
+/* only apply the hover style on devices with a mouse/pointer that can hover - issue #977 */
+@media (hover: hover) {
+  .jspsych-btn:hover {
+    background-color: #ddd;
+    border-color: #aaa;
+  }
+}
+
+.jspsych-btn:active {
+  background-color: #ddd;
+  border-color: #000000;
+}
+
+.jspsych-btn:disabled {
+  background-color: #eee;
+  color: #aaa;
+  border-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* custom style for input[type="range] (slider) to improve alignment between positions and labels */
+
+.sliderbefore1 {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  cursor: pointer;
+}
+
+.sliderbefore1::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0px;
+  height: 0px;
+  border-color: transparent;
+  border-radius: 50%;
+  background: #d3d3d3;
+  cursor: pointer;
+}
+
+.sliderbefore1::-moz-range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0px;
+  height: 0px;
+  border-color: transparent;
+  border-radius: 50%;
+  background: #d3d3d3;
+  cursor: pointer;
+}
+
+.sliderbefore1::-ms-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0px;
+  height: 0px;
+  border-color: transparent;
+  border-radius: 50%;
+  background: #d3d3d3;
+  cursor: pointer;
+}
+
+
+.sliderbefore2 {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  cursor: pointer;
+}
+
+.sliderbefore2::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0px;
+  height: 0px;
+  border-color: transparent;
+  border-radius: 50%;
+  background: #d3d3d3;
+  cursor: pointer;
+}
+
+.sliderbefore2::-moz-range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0px;
+  height: 0px;
+  border-color: transparent;
+  border-radius: 50%;
+  background: #d3d3d3;
+  cursor: pointer;
+}
+
+.sliderbefore2::-ms-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0px;
+  height: 0px;
+  border-color: transparent;
+  border-radius: 50%;
+  background: #d3d3d3;
+  cursor: pointer;
+}
+
+.sliderafter {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  cursor: pointer;
+}
+
+.sliderafter::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-color: transparent;
+  border-radius: 50%;
+  background: #0000FF;
+}
+
+.sliderafter::-moz-range-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-color: transparent;
+  border-radius: 50%;
+  background: #0000FF;
+}
+
+.sliderafter::-ms-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-color: transparent;
+  border-radius: 50%;
+  background: #0000FF;
+}
+
+
+/* jsPsych progress bar */
+
+#jspsych-progressbar-container {
+  color: #555;
+  border-bottom: 1px solid #dedede;
+  background-color: #f9f9f9;
+  margin-bottom: 1em;
+  text-align: center;
+  padding: 8px 8px;
+  width: 100%;
+  line-height: 1em;
+}
+
+#jspsych-progressbar-container span {
+  font-size: 18px;
+  padding-right: 14px;
+}
+
+#jspsych-progressbar-outer {
+  background-color: #eee;
+  width: 50%;
+  margin: auto;
+  height: 14px;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+#jspsych-progressbar-inner {
+  background-color: #aaa;
+  width: 0%;
+  height: 100%;
+}
+
+/* Control appearance of jsPsych.data.displayData() */
+#jspsych-data-display {
+  text-align: left;
+}
+
+/*.jspsych-survey-likert-opts {
+
+  font-size: 25px;
+}*/
+
+.jspsych-survey-likert-statement {
+
+  font-size: 18px;
+}
+
+.jspsych-survey-likert-opt-label {
+
+  font-size: 16px;
+  font-weight: normal;
+}
+
+div.textBox {
+  text-align: justify;
+  margin: auto;
+}
+
+div.textBoxfq {
+  text-align: justify;
+  margin-right: 20%;
+  margin-left: 20%;
+
+}
