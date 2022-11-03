@@ -19,7 +19,7 @@ function getTimeStamp() {
     return [year, twoPad(month), twoPad(day), twoPad(hour), twoPad(minute), twoPad(second)].join('-');
 }
 
-// Before Experiment
+// Page navigation
 function changePage(hide, show) {
     document.getElementById(hide).style.display = "none";
     document.getElementById(show).style.display = "block";
@@ -37,11 +37,33 @@ function openFullscreen(elem, testing = false) {
     }
 }
 
+function closeFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) { /* Safari */
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { /* IE11 */
+        document.msExitFullscreen();
+    }
+}
+
 function loadConsent() {
     changePage("page_welcome", "page_consent");
     // let elem = document.body;
     // openFullscreen(elem);
 }
 
-// Testing
-console.log(getTimeStamp());
+function exit(page) {
+    if (document.fullscreenElement != null) closeFullscreen();
+    // if (page == "page_main") {
+    //     // document.getElementById("canvas").remove();
+    //     changePage(page, "page_timeout");
+    //     clearInterval(interval);
+    //     clearInterval(timeoutinterval);
+    // }
+    // else
+    changePage(page, "page_exit");
+}
+
+// // Testing
+// console.log(getTimeStamp());

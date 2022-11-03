@@ -50,7 +50,7 @@
     <div id="page_consent" id="consent" style="display:none;">
         <center>
             <br><br><br><br>
-            <h1>Consent to Participate in the Stimulus Survey</h1>
+            <h1>Study Consent Form</h1>
             <br>
             <h2>Who conducts this study?</h2>
             <p>This is a psychological experiment conducted by <b>Dr. Eric Schulz</b>, research group leader at
@@ -71,8 +71,10 @@
             <p>This study is designed to assess how similar a set of abstract images are to
                 people. You will see pairs of images and be asked to rate their similarity.</p>
 
-            <h2>Duration and compensation</h2>
-            <p>The study will take about 10 minutes and will pay you 3€.</p>
+            <h2>Duration, timeout and compensation</h2>
+            <p>The study will take about 10 minutes. Please respond to a given task within 60 seconds, otherwise the
+                experiment will time out and your data will be lost. Upon successful completion of the experiment, we
+                will pay you 3€.</p>
 
             <h2>Study withdrawal</h2>
             <p>Your participation in this research is voluntary. You may refrain from
@@ -98,10 +100,29 @@
             <br><br> --- <br><br><br>
             <p><i>By selecting the 'consent' option below, I acknowledge that I am 18 years or older, that I am a fluent
                     speaker of English, that I have read this consent
-                    form, and that I agree to take part in the research.</i></p><br><br><br>
+                    form, and that I agree to take part in this study.</i></p><br><br><br>
             <button class='buttonG' onclick="loaddataprotection()">Consent and continue</button>
             <button class='buttonN' onclick="exit('page_consent')">Not right now</button>
             <br><br><br><br><br><br>
+    </div>
+
+    <!-- Exit, Timeout, End -->
+    <div id="page_exit" class="center-screen" id="exit" style="display:none;">
+        <center>
+            <h4>You did not consent to participate. Maybe another time!<br>You may now close this tab.</h4>
+    </div>
+
+    <div id="page_timeout" class="center-screen" id="exit" style="display:none;">
+        <center>
+            <h4>Sorry! Your experiment got timed out as no response was obtained for 60 seconds. None of your data was
+                recorded. Unfortunately, we will not be able to pay you.<br>You may now close this tab.</h4>
+    </div>
+
+    <div id="page_end" class="center-screen" id="end" style="display:none;">
+        <center>
+            <h4>Thank you for participating in our study! Your responses have been recorded. Your completion code is:
+                <b>70316F6E</b><br>You may now close this tab.
+            </h4>
     </div>
 </body>
 
