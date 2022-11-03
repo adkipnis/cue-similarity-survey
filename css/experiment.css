@@ -5,15 +5,16 @@ html {
 }
 
 body {
-    position: absolute;
-    margin: auto;
-    width: 100%;
-    top: 50%;
-    transform: translate(0, -50%);
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    height: 100vh;
+    margin: 0;
     color: black;
-    /* background-color: #bcbcbc; */
+    background-color: #bcbcbc; */
 }
+
 
 h1 {
     font-family: 'Crimson Pro', serif;
@@ -24,6 +25,15 @@ h1 {
     margin-left: 5%;
     margin-right: 5%;
     line-height: 35px;
+}
+
+h2 {
+    font-family: 'Crimson Pro', serif;
+    font-size: 30px;
+    margin-top: 2%;
+    margin-left: 20%;
+    font-weight: bold;
+    text-align: left;
 }
 
 h4 {
@@ -39,13 +49,33 @@ h4 {
     line-height: 35px;
 }
 
-/* .center-screen {
+p {
+    font-family: 'Crimson Pro', serif;
+    font-weight: 300;
+    font-size: 25px;
+    text-align: left;
+    line-height: 150%;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+li {
+    font-family: 'Crimson Pro', serif;
+    font-weight: 300;
+    font-size: 25px;
+    text-align: left;
+    line-height: 150%;
+    margin-left: 22%;
+    margin-right: 20%;
+}
+
+.center-screen {
     position: absolute;
     margin: auto;
     width: 100%;
     top: 50%;
     transform: translate(0, -50%);
-} */
+}
 
 .buttonG {
     background-color: #4CAF50;
@@ -64,4 +94,23 @@ h4 {
 
 .buttonG:hover {
     background-color: #8dcf8d;
+}
+
+.buttonN {
+    background-color: #a3a3a3;
+    /* Green */
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.3s;
+    cursor: pointer;
+}
+
+.buttonN:hover {
+    background-color: #c5c5c5;
 }

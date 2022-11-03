@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Alex Kipnis">
     <script src="jspsych/dist/jspsych.js"></script>
+    <script src="js/experiment.js"></script>
 
     <!-- Style -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,13 +14,14 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
-    <!-- <link href="css/mobile.css" media="screen and (min-width: 0px) and (max-width: 600px)" rel="stylesheet"
+    <link href="css/mobile.css" media="screen and (min-width: 0px) and (max-width: 600px)" rel="stylesheet"
         type="text/css" />
     <link href="css/tab.css" media="screen and (min-width : 601px) and (max-width: 949px)" rel="stylesheet"
         type="text/css" />
     <link href="css/laptop.css" media="screen and (min-width : 950px) and (max-width: 1599px)" rel="stylesheet"
-        type="text/css" /> -->
-    <link href="css/desktop.css" media="screen and (min-width : 0px)" rel="stylesheet" type="text/css" />
+        type="text/css" />
+    <link href="css/desktop.css" media="screen and (min-width : 1600px)" rel="stylesheet" type="text/css" />
+    <link href="css/experiment.css" rel="stylesheet" type="text/css" />
 </head>
 
 <style>
@@ -30,20 +32,76 @@
 
 <body>
 
-    <table id="canvas"></table>
+    <!-- <table id="canvas"></table> -->
 
+    <!-- Welcome Page -->
     <div id="page_welcome" class="center-screen" id="welcome">
         <center>
-            <h1>Welcome!</h1>
+            <h1>Welcome!</h1><br>
             <h4>
-                If you would like to participate in our experiment, please press the button
-                below.<br>Please turn off
-                any dark screen plugin/screen filter that may be active on your browser. <br>The experiment will enter
-                full
-                screen mode.
+                If you want to participate in this experiment, please press the button
+                below.<br>If you have any dark screen filter active on your browser, please turn it off.
+                <!-- <br>The experiment will enter full screen mode upon starting. -->
             </h4><br><br>
+            <button class='buttonG' onclick=" loadConsent()">Start</button>
+    </div>
 
-            <button class='buttonG' onclick=" loadconsent()">Start</button>
+    <!-- Consent Page -->
+    <div id="page_consent" id="consent" style="display:none;">
+        <center>
+            <br><br><br><br>
+            <h1>Consent to Participate in the Stimulus Survey</h1>
+            <br>
+            <h2>Who conducts this study?</h2>
+            <p>This is a psychological experiment conducted by <b>Dr. Eric Schulz</b>, research group leader at
+                the Max Planck Institute for Biological Cybernetics, and the
+                members of his lab.
+            </p>
+
+            <h2>Who can participate?</h2>
+            <p>
+                In order to consent to participate, you must meet the
+                following criteria:
+                <li>You are at least <b>18 years</b> old</li>
+                <li>You can fluently comprehend <b>English</b> text</li>
+                <li>You have <b>not previously participated</b> in this experiment</li>
+            </p>
+
+            <h2>What is the goal of this study?</h2>
+            <p>This study is designed to assess how similar a set of abstract images are to
+                people. You will see pairs of images and be asked to rate their similarity.</p>
+
+            <h2>Duration and compensation</h2>
+            <p>The study will take about 10 minutes and will pay you 3€.</p>
+
+            <h2>Study withdrawal</h2>
+            <p>Your participation in this research is voluntary. You may refrain from
+                answering any questions that make you uncomfortable and may withdraw your
+                participation at any time without penalty by exiting this task and alerting
+                the experimenter. You may choose not to complete certain parts of the task
+                or answer certain questions. You may contact us at the address provided
+                below if you have additional questions or concerns.</p>
+
+            <h2>Anonymity</h2>
+            <p>Your online username may be connected to your individual responses, but
+                we will not be asking for any additional personally identifying information,
+                and we will handle responses as confidentially as possible. We cannot however
+                guarantee the confidentiality of information transmitted over the Internet.
+                We will be keeping de-identified data collected as part of this experiment
+                indefinitely. Data used in scientific publications will remain completely
+                anonymous.</p>
+
+            <h2>Contacting us</h2>
+            <p>If you have any questions about the study, feel free to contact our lab.
+                You can reach us at <a href="mailto: name@domain.com?subject=Questions - Cue Similarity Survey">
+                    name@domain.com</a>.</p>
+            <br><br> --- <br><br><br>
+            <p><i>By selecting the 'consent' option below, I acknowledge that I am 18 years or older, that I am a fluent
+                    speaker of English, that I have read this consent
+                    form, and that I agree to take part in the research.</i></p><br><br><br>
+            <button class='buttonG' onclick="loaddataprotection()">Consent and continue</button>
+            <button class='buttonN' onclick="exit('page_consent')">Not right now</button>
+            <br><br><br><br><br><br>
     </div>
 </body>
 
