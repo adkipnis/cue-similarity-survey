@@ -1,6 +1,7 @@
 // Author: Alex Kipnis
 // let jsPsych = initJsPsych();
 const timestamp = getTimeStamp();
+let fs = false;
 
 // Helpers
 function twoPad(n) {
@@ -47,17 +48,32 @@ function closeFullscreen() {
     }
 }
 
+function pageStep(from, to) {
+    changePage(from, to);
+    if (fs) {
+        let elem = document.body;
+        openFullscreen(elem);
+    }
+}
+
 function loadConsent() {
-    changePage("page_welcome", "page_consent");
-    // let elem = document.body;
-    // openFullscreen(elem);
+    pageStep("page_welcome", "page_consent");
 }
 
 function loadDataProtection() {
-    changePage("page_consent", "page_dataprotection");
-    // let elem = document.body;
-    // requestFullScreen(elem);
+    pageStep("page_consent", "page_dataprotection");
 }
+
+function loadFS() {
+    pageStep("page_dataprotection", "page_fs");
+}
+
+function loadMain() {
+    changePage("page_fs", "page_main");
+    let elem = document.body;
+    openFullscreen(elem);
+}
+
 
 function exit(page) {
     if (document.fullscreenElement != null) closeFullscreen();

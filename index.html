@@ -34,8 +34,8 @@
 
     <!-- <table id="canvas"></table> -->
 
-    <!-- Welcome Page -->
-    <div id="page_welcome" class="center-screen" id="welcome" style="display:none;">
+    <!-- Welcome -->
+    <div id="page_welcome" class="center-screen" id="welcome">
         <center>
             <h1>Welcome!</h1><br>
             <h4>
@@ -46,7 +46,7 @@
             <button class='buttonG' onclick=" loadConsent()">Start</button>
     </div>
 
-    <!-- Consent Page -->
+    <!-- Consent -->
     <div id="page_consent" id="consent" style="display:none;">
         <center>
             <br><br><br><br>
@@ -107,7 +107,7 @@
     </div>
 
     <!-- Data Protection -->
-    <div id="page_dataprotection" id="consent">
+    <div id="page_dataprotection" id="consent" style="display:none;">
         <center>
             <br><br><br><br>
             <h1>Legal Declaration of Consent <br><br> under Data Protection Law</h1><br>
@@ -183,9 +183,27 @@
                 No
                 information about you will be retained. </p>
             <br><br>
-            <button class='buttonG' onclick="loadOverview1()">Consent and continue</button>
+            <button class='buttonG' onclick="loadFS()">Consent and continue</button>
             <button class='buttonN' onclick="exit('page_dataprotection')">Not right now</button>
-            <br><br><br>
+            <br><br><br><br><br><br>
+    </div>
+
+    <!-- Full Screen -->
+    <div id="page_fs" class="center-screen" style="display:none;">
+        <center>
+            <h4>
+                Awesome, thanks for agreeing to participate!<br>The experiment will enter full screen mode once you
+                start.
+            </h4><br><br>
+            <button class='buttonG' onclick=" loadMain()">Start Experiment</button>
+    </div>
+
+    <!-- Main Page -->
+    <div id="page_main" class="center-screen" id="main" style="display:none;">
+        <center>
+            <p>
+                <i>Nothing here, yet...</i>
+            </p>
     </div>
 
     <!-- Exit, Timeout, End -->
