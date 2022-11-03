@@ -53,6 +53,12 @@ function loadConsent() {
     // openFullscreen(elem);
 }
 
+function loadDataProtection() {
+    changePage("page_consent", "page_dataprotection");
+    // let elem = document.body;
+    // requestFullScreen(elem);
+}
+
 function exit(page) {
     if (document.fullscreenElement != null) closeFullscreen();
     // if (page == "page_main") {

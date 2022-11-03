@@ -35,7 +35,7 @@
     <!-- <table id="canvas"></table> -->
 
     <!-- Welcome Page -->
-    <div id="page_welcome" class="center-screen" id="welcome">
+    <div id="page_welcome" class="center-screen" id="welcome" style="display:none;">
         <center>
             <h1>Welcome!</h1><br>
             <h4>
@@ -101,9 +101,91 @@
             <p><i>By selecting the 'consent' option below, I acknowledge that I am 18 years or older, that I am a fluent
                     speaker of English, that I have read this consent
                     form, and that I agree to take part in this study.</i></p><br><br><br>
-            <button class='buttonG' onclick="loaddataprotection()">Consent and continue</button>
+            <button class='buttonG' onclick="loadDataProtection()">Consent and continue</button>
             <button class='buttonN' onclick="exit('page_consent')">Not right now</button>
             <br><br><br><br><br><br>
+    </div>
+
+    <!-- Data Protection -->
+    <div id="page_dataprotection" id="consent">
+        <center>
+            <br><br><br><br>
+            <h1>Legal Declaration of Consent <br><br> under Data Protection Law</h1><br>
+            <p><a target="_blank" rel="noopener noreferrer"
+                    href="https://kyblab.tuebingen.mpg.de/fma/dataprotection.pdf">Please click here to view our Data
+                    Protection
+                    Information Sheet, yours to keep.</a></p><br>
+            <p><i>I have received and took note of the written Data Protection Information Sheet for this study. In
+                    doing
+                    so, I
+                    had sufficient time and opportunity to ask questions about data protection and reconsider my
+                    participation in
+                    the study. </p><br>
+            <p>I am aware that:</i></p>
+            <ul>
+                <li>the processing and use of the collected data occur in a pseudonymized form within the scope of the
+                    legally
+                    prescribed provisions.
+                    As a general rule, the storage occurs in the form of questionnaires, as well as on electronic data
+                    media, for
+                    10 years
+                    or longer, if this is required by the purpose of the study.</li>
+                <li>by providing further personal data in pseudonymized form, collected personal data may be used for
+                    the
+                    preparation of anonymized
+                    scientific research work and may also be published and used in an anonymized form in medical
+                    journals,
+                    scientific publications
+                    and publicly accessible scientific databases, so that a direct assignment to my person cannot be
+                    established.
+                </li>
+                <li>the information obtained during this study may also be sent in an anonymized form to cooperation
+                    partners
+                    within the
+                    scope of the European General Data Protection Regulation for scientific purposes and to cooperation
+                    partners
+                    outside of the
+                    European Union, i.e. to countries with a lower data protection level (this also applies to the USA).
+                </li>
+                <li>the data collected within the scope of the study can also be used and processed in the future inside
+                    of the
+                    Institute.</li>
+            </ul><br>
+            <p><i>I was informed about my rights, that at any time:</i></p>
+            <ul>
+                <li>I can withdraw this declaration of consent.</li>
+                <li>I can request information about my stored data and request the correction or blocking of data.</li>
+                <li>by cancellation of my participation in the study, I can request that my personal data collected
+                    until that
+                    time are immediately deleted or anonymized.</li>
+                <li>I can request that my data are handed out to me or to third parties (if technically feasible).</li>
+            </ul><br>
+
+            <p><i>I hereby declare that:</i></p>
+            <ul>
+                <li>I have been adequately informed about the collection and processing of my data and rights.</li>
+                <li>I consent to the collection and processing of personal data within the scope of the study and
+                    its
+                    pseudonymized disclosure so that
+                    only the persons conducting the study can establish a link between the data and my person.</li>
+            </ul><br>
+            <p><i>By selecting the consent option below, I agree to participate in online studies or experiments using
+                    learning,
+                    and I consent to the use of my data described in the Data Protection Information Sheet and confirm
+                    having
+                    received a copy of the Data Protection Sheet.</i></p>
+
+            <br><br>---<br><br><br>
+            <p><b>Note</b>: If you do not consent to participate in this study or have your data used as outlined in the
+                Data
+                Protection Information Sheet, then this experiment will now close and you will not proceed any
+                further.
+                No
+                information about you will be retained. </p>
+            <br><br>
+            <button class='buttonG' onclick="loadOverview1()">Consent and continue</button>
+            <button class='buttonN' onclick="exit('page_dataprotection')">Not right now</button>
+            <br><br><br>
     </div>
 
     <!-- Exit, Timeout, End -->
