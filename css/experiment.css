@@ -1,0 +1,67 @@
+html {
+    background-image: url("background.jpg");
+    background-size: cover;
+    /* background-color: #bcbcbc; */
+}
+
+body {
+    position: absolute;
+    margin: auto;
+    width: 100%;
+    top: 50%;
+    transform: translate(0, -50%);
+    align-items: center;
+    color: black;
+    /* background-color: #bcbcbc; */
+}
+
+h1 {
+    font-family: 'Crimson Pro', serif;
+    font-size: 50px;
+    font-weight: bold;
+    margin-bottom: 2%;
+    margin-top: 0;
+    margin-left: 5%;
+    margin-right: 5%;
+    line-height: 35px;
+}
+
+h4 {
+    font-family: 'Crimson Pro', serif;
+    font-weight: 500;
+    font-size: 25px;
+    font-weight: normal;
+    text-align: center;
+    margin-bottom: 0;
+    margin-top: 0;
+    margin-left: 5%;
+    margin-right: 5%;
+    line-height: 35px;
+}
+
+/* .center-screen {
+    position: absolute;
+    margin: auto;
+    width: 100%;
+    top: 50%;
+    transform: translate(0, -50%);
+} */
+
+.buttonG {
+    background-color: #4CAF50;
+    /* Green */
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.3s;
+    cursor: pointer;
+}
+
+.buttonG:hover {
+    background-color: #8dcf8d;
+}

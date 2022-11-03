@@ -1,19 +1,19 @@
-img.adaptive {
-  width: 185px !important;
-  margin: 10px 10px 10px 10px;
-  /* border: 2px solid #000; */
+img.adaptive{
+	width: 185px !important;
+	margin: 10px 10px 10px 10px;
+	/* border: 2px solid #000; */
 }
 
 p {
-  font-family: "Open Sans", "Arial", sans-serif;
-  font-size: 18px;
-  font-weight: normal;
-  margin-bottom: 0;
-  margin-top: 0;
-  margin-left: 5%;
-  margin-right: 5%;
-  text-align: justify;
-  line-height: 30px;
+	font-family: "Open Sans", "Arial", sans-serif;
+	font-size: 18px;
+	font-weight: normal;
+	margin-bottom: 0;
+	margin-top: 0;
+	margin-left: 5%;
+	margin-right: 5%;
+	text-align: justify;
+	line-height: 30px;
 }
 
 li {
@@ -52,6 +52,6 @@ label {
 }
 
 .container {
-  width: 125%;
-  transform: translateX(-10%);
+	width: 125%;
+	transform: translateX(-10%);
 }
