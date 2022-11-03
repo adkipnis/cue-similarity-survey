@@ -5,19 +5,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Alex Kipnis">
+    <script src="jspsych/dist/jspsych.js"></script>
+
     <!-- Style -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
-    <link href="css/mobile.css" media="screen and (min-width: 0px) and (max-width: 600px)" rel="stylesheet"
+    <!-- <link href="css/mobile.css" media="screen and (min-width: 0px) and (max-width: 600px)" rel="stylesheet"
         type="text/css" />
     <link href="css/tab.css" media="screen and (min-width : 601px) and (max-width: 949px)" rel="stylesheet"
         type="text/css" />
     <link href="css/laptop.css" media="screen and (min-width : 950px) and (max-width: 1599px)" rel="stylesheet"
-        type="text/css" />
-    <link href="css/desktop.css" media="screen and (min-width : 1600px)" rel="stylesheet" type="text/css" />
+        type="text/css" /> -->
+    <link href="css/desktop.css" media="screen and (min-width : 0px)" rel="stylesheet" type="text/css" />
 </head>
 
 <style>
@@ -28,9 +30,21 @@
 
 <body>
 
-    <p> Before he died in 2013, the great sociologist Robert Bellah said that his view of everything he’d studied across
-        his life was tilted on its axis by this late recognition: </p>
+    <table id="canvas"></table>
 
+    <div id="page_welcome" class="center-screen" id="welcome">
+        <center>
+            <h1>Welcome!</h1>
+            <h4>
+                If you would like to participate in our experiment, please press the button
+                below.<br>Please turn off
+                any dark screen plugin/screen filter that may be active on your browser. <br>The experiment will enter
+                full
+                screen mode.
+            </h4><br><br>
+
+            <button class='buttonG' onclick=" loadconsent()">Start</button>
+    </div>
 </body>
 
 </html>

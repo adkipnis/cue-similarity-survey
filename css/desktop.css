@@ -4,7 +4,6 @@ img.adaptive {
   /* border: 2px solid #000; */
 }
 
-
 li {
   font-family: "Open Sans", sans-serif;
   font-size: 20px;
@@ -17,15 +16,27 @@ li {
   line-height: 35px;
 }
 
+h1 {
+  font-family: 'Crimson Pro', serif;
+  font-size: 50px;
+  font-weight: bold;
+  margin-bottom: 2%;
+  margin-top: 0;
+  margin-left: 5%;
+  margin-right: 5%;
+  line-height: 35px;
+}
+
 h4 {
-  font-family: "Open Sans", sans-serif;
-  font-size: 20px;
+  font-family: 'Crimson Pro', serif;
+  font-weight: 500;
+  font-size: 25px;
   font-weight: normal;
   margin-bottom: 0;
   margin-top: 0;
-  text-align: justify;
   margin-left: 5%;
   margin-right: 5%;
+  line-height: 35px;
 }
 
 p {
@@ -55,4 +66,31 @@ label {
 .container {
   width: 200%;
   transform: translateX(-25%);
+}
+
+.center-screen {
+  position: absolute;
+  margin: auto;
+  width: 100%;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.buttonG {
+  background-color: #4CAF50;
+  /* Green */
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  transition-duration: 0.3s;
+  cursor: pointer;
+}
+
+.buttonG:hover {
+  background-color: #8dcf8d;
 }
