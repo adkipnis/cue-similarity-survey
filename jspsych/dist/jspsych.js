@@ -1,7 +1,7 @@
 var jsPsychModule = (function (exports) {
     'use strict';
 
-    /*! *****************************************************************************
+    /******************************************************************************
     Copyright (c) Microsoft Corporation.
 
     Permission to use, copy, modify, and/or distribute this software for any
@@ -25,6 +25,8 @@ var jsPsychModule = (function (exports) {
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     }
+
+    var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
     // Gets all non-builtin properties up the prototype chain
     const getAllProperties = object => {
@@ -68,7 +70,38 @@ var jsPsychModule = (function (exports) {
     	return self;
     };
 
-    var version = "7.0.0";
+    var version = "7.3.1";
+
+    class MigrationError extends Error {
+        constructor(message = "The global `jsPsych` variable is no longer available in jsPsych v7.") {
+            super(`${message} Please follow the migration guide at https://www.jspsych.org/7.0/support/migration-v7/ to update your experiment.`);
+            this.name = "MigrationError";
+        }
+    }
+    // Define a global jsPsych object to handle invocations on it with migration errors
+    window.jsPsych = {
+        get init() {
+            throw new MigrationError("`jsPsych.init()` was replaced by `initJsPsych()` in jsPsych v7.");
+        },
+        get data() {
+            throw new MigrationError();
+        },
+        get randomization() {
+            throw new MigrationError();
+        },
+        get turk() {
+            throw new MigrationError();
+        },
+        get pluginAPI() {
+            throw new MigrationError();
+        },
+        get ALL_KEYS() {
+            throw new MigrationError('jsPsych.ALL_KEYS was replaced by the "ALL_KEYS" string in jsPsych v7.');
+        },
+        get NO_KEYS() {
+            throw new MigrationError('jsPsych.NO_KEYS was replaced by the "NO_KEYS" string in jsPsych v7.');
+        },
+    };
 
     /**
      * Finds all of the unique items in an array.
@@ -376,6 +409,9 @@ var jsPsychModule = (function (exports) {
         }
         filterCustom(fn) {
             return new DataCollection(this.trials.filter(fn));
+        }
+        filterColumns(columns) {
+            return new DataCollection(this.trials.map((trial) => Object.fromEntries(columns.filter((key) => key in trial).map((key) => [key, trial[key]]))));
         }
         select(column) {
             const values = [];
@@ -778,6 +814,13 @@ var jsPsychModule = (function (exports) {
             pretty_name: "Custom CSS classes",
             default: null,
         },
+        /**
+         * Options to control simulation mode for the trial.
+         */
+        simulation_options: {
+            type: exports.ParameterType.COMPLEX,
+            default: null,
+        },
     };
 
     const preloadParameterTypes = [
@@ -798,8 +841,14 @@ var jsPsychModule = (function (exports) {
             this.preload_requests = [];
             this.img_cache = {};
             this.preloadMap = new Map();
+            this.microphone_recorder = null;
+            this.camera_stream = null;
+            this.camera_recorder = null;
         }
         getVideoBuffer(videoID) {
+            if (videoID.startsWith("blob:")) {
+                this.video_buffers[videoID] = videoID;
+            }
             return this.video_buffers[videoID];
         }
         initAudio() {
@@ -854,15 +903,15 @@ var jsPsychModule = (function (exports) {
                         callback_error({ source: source, error: e });
                     });
                 };
-                request.onerror = function (e) {
+                request.onerror = (e) => {
                     let err = e;
-                    if (this.status == 404) {
+                    if (request.status == 404) {
                         err = "404";
                     }
                     callback_error({ source: source, error: err });
                 };
-                request.onloadend = function (e) {
-                    if (this.status == 404) {
+                request.onloadend = (e) => {
+                    if (request.status == 404) {
                         callback_error({ source: source, error: "404" });
                     }
                 };
@@ -919,20 +968,21 @@ var jsPsychModule = (function (exports) {
                 callback_complete();
                 return;
             }
-            for (var i = 0; i < images.length; i++) {
-                var img = new Image();
-                img.onload = function () {
+            for (let i = 0; i < images.length; i++) {
+                const img = new Image();
+                const src = images[i];
+                img.onload = () => {
                     n_loaded++;
-                    callback_load(img.src);
+                    callback_load(src);
                     if (n_loaded === images.length) {
                         callback_complete();
                     }
                 };
-                img.onerror = function (e) {
-                    callback_error({ source: img.src, error: e });
+                img.onerror = (e) => {
+                    callback_error({ source: src, error: e });
                 };
-                img.src = images[i];
-                this.img_cache[images[i]] = img;
+                img.src = src;
+                this.img_cache[src] = img;
                 this.preload_requests.push(img);
             }
         }
@@ -950,9 +1000,9 @@ var jsPsychModule = (function (exports) {
                 const request = new XMLHttpRequest();
                 request.open("GET", video, true);
                 request.responseType = "blob";
-                request.onload = function () {
-                    if (this.status === 200 || this.status === 0) {
-                        const videoBlob = this.response;
+                request.onload = () => {
+                    if (request.status === 200 || request.status === 0) {
+                        const videoBlob = request.response;
                         video_buffers[video] = URL.createObjectURL(videoBlob); // IE10+
                         n_loaded++;
                         callback_load(video);
@@ -961,15 +1011,15 @@ var jsPsychModule = (function (exports) {
                         }
                     }
                 };
-                request.onerror = function (e) {
+                request.onerror = (e) => {
                     let err = e;
-                    if (this.status == 404) {
+                    if (request.status == 404) {
                         err = "404";
                     }
                     callback_error({ source: video, error: err });
                 };
-                request.onloadend = function (e) {
-                    if (this.status == 404) {
+                request.onloadend = (e) => {
+                    if (request.status == 404) {
                         callback_error({ source: video, error: "404" });
                     }
                 };
@@ -1034,6 +1084,195 @@ var jsPsychModule = (function (exports) {
             }
             this.preload_requests = [];
         }
+        initializeMicrophoneRecorder(stream) {
+            const recorder = new MediaRecorder(stream);
+            this.microphone_recorder = recorder;
+        }
+        getMicrophoneRecorder() {
+            return this.microphone_recorder;
+        }
+        initializeCameraRecorder(stream, opts) {
+            this.camera_stream = stream;
+            const recorder = new MediaRecorder(stream, opts);
+            this.camera_recorder = recorder;
+        }
+        getCameraStream() {
+            return this.camera_stream;
+        }
+        getCameraRecorder() {
+            return this.camera_recorder;
+        }
+    }
+
+    class SimulationAPI {
+        dispatchEvent(event) {
+            document.body.dispatchEvent(event);
+        }
+        /**
+         * Dispatches a `keydown` event for the specified key
+         * @param key Character code (`.key` property) for the key to press.
+         */
+        keyDown(key) {
+            this.dispatchEvent(new KeyboardEvent("keydown", { key }));
+        }
+        /**
+         * Dispatches a `keyup` event for the specified key
+         * @param key Character code (`.key` property) for the key to press.
+         */
+        keyUp(key) {
+            this.dispatchEvent(new KeyboardEvent("keyup", { key }));
+        }
+        /**
+         * Dispatches a `keydown` and `keyup` event in sequence to simulate pressing a key.
+         * @param key Character code (`.key` property) for the key to press.
+         * @param delay Length of time to wait (ms) before executing action
+         */
+        pressKey(key, delay = 0) {
+            if (delay > 0) {
+                setTimeout(() => {
+                    this.keyDown(key);
+                    this.keyUp(key);
+                }, delay);
+            }
+            else {
+                this.keyDown(key);
+                this.keyUp(key);
+            }
+        }
+        /**
+         * Dispatches `mousedown`, `mouseup`, and `click` events on the target element
+         * @param target The element to click
+         * @param delay Length of time to wait (ms) before executing action
+         */
+        clickTarget(target, delay = 0) {
+            if (delay > 0) {
+                setTimeout(() => {
+                    target.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+                    target.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+                    target.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+                }, delay);
+            }
+            else {
+                target.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+                target.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+                target.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+            }
+        }
+        /**
+         * Sets the value of a target text input
+         * @param target A text input element to fill in
+         * @param text Text to input
+         * @param delay Length of time to wait (ms) before executing action
+         */
+        fillTextInput(target, text, delay = 0) {
+            if (delay > 0) {
+                setTimeout(() => {
+                    target.value = text;
+                }, delay);
+            }
+            else {
+                target.value = text;
+            }
+        }
+        /**
+         * Picks a valid key from `choices`, taking into account jsPsych-specific
+         * identifiers like "NO_KEYS" and "ALL_KEYS".
+         * @param choices Which keys are valid.
+         * @returns A key selected at random from the valid keys.
+         */
+        getValidKey(choices) {
+            const possible_keys = [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+                "t",
+                "u",
+                "v",
+                "w",
+                "x",
+                "y",
+                "z",
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                " ",
+            ];
+            let key;
+            if (choices == "NO_KEYS") {
+                key = null;
+            }
+            else if (choices == "ALL_KEYS") {
+                key = possible_keys[Math.floor(Math.random() * possible_keys.length)];
+            }
+            else {
+                const flat_choices = choices.flat();
+                key = flat_choices[Math.floor(Math.random() * flat_choices.length)];
+            }
+            return key;
+        }
+        mergeSimulationData(default_data, simulation_options) {
+            // override any data with data from simulation object
+            return Object.assign(Object.assign({}, default_data), simulation_options === null || simulation_options === void 0 ? void 0 : simulation_options.data);
+        }
+        ensureSimulationDataConsistency(trial, data) {
+            // All RTs must be rounded
+            if (data.rt) {
+                data.rt = Math.round(data.rt);
+            }
+            // If a trial_duration and rt exist, make sure that the RT is not longer than the trial.
+            if (trial.trial_duration && data.rt && data.rt > trial.trial_duration) {
+                data.rt = null;
+                if (data.response) {
+                    data.response = null;
+                }
+                if (data.correct) {
+                    data.correct = false;
+                }
+            }
+            // If trial.choices is NO_KEYS make sure that response and RT are null
+            if (trial.choices && trial.choices == "NO_KEYS") {
+                if (data.rt) {
+                    data.rt = null;
+                }
+                if (data.response) {
+                    data.response = null;
+                }
+            }
+            // If response is not allowed before stimulus display complete, ensure RT
+            // is longer than display time.
+            if (trial.allow_response_before_complete) {
+                if (trial.sequence_reps && trial.frame_time) {
+                    const min_time = trial.sequence_reps * trial.frame_time * trial.stimuli.length;
+                    if (data.rt < min_time) {
+                        data.rt = null;
+                        data.response = null;
+                    }
+                }
+            }
+        }
     }
 
     class TimeoutAPI {
@@ -1060,9 +1299,480 @@ var jsPsychModule = (function (exports) {
             new TimeoutAPI(),
             new MediaAPI(settings.use_webaudio, jsPsych.webaudio_context),
             new HardwareAPI(),
+            new SimulationAPI(),
         ].map((object) => autoBind(object)));
     }
 
+    var wordList = [
+      // Borrowed from xkcd password generator which borrowed it from wherever
+      "ability","able","aboard","about","above","accept","accident","according",
+      "account","accurate","acres","across","act","action","active","activity",
+      "actual","actually","add","addition","additional","adjective","adult","adventure",
+      "advice","affect","afraid","after","afternoon","again","against","age",
+      "ago","agree","ahead","aid","air","airplane","alike","alive",
+      "all","allow","almost","alone","along","aloud","alphabet","already",
+      "also","although","am","among","amount","ancient","angle","angry",
+      "animal","announced","another","answer","ants","any","anybody","anyone",
+      "anything","anyway","anywhere","apart","apartment","appearance","apple","applied",
+      "appropriate","are","area","arm","army","around","arrange","arrangement",
+      "arrive","arrow","art","article","as","aside","ask","asleep",
+      "at","ate","atmosphere","atom","atomic","attached","attack","attempt",
+      "attention","audience","author","automobile","available","average","avoid","aware",
+      "away","baby","back","bad","badly","bag","balance","ball",
+      "balloon","band","bank","bar","bare","bark","barn","base",
+      "baseball","basic","basis","basket","bat","battle","be","bean",
+      "bear","beat","beautiful","beauty","became","because","become","becoming",
+      "bee","been","before","began","beginning","begun","behavior","behind",
+      "being","believed","bell","belong","below","belt","bend","beneath",
+      "bent","beside","best","bet","better","between","beyond","bicycle",
+      "bigger","biggest","bill","birds","birth","birthday","bit","bite",
+      "black","blank","blanket","blew","blind","block","blood","blow",
+      "blue","board","boat","body","bone","book","border","born",
+      "both","bottle","bottom","bound","bow","bowl","box","boy",
+      "brain","branch","brass","brave","bread","break","breakfast","breath",
+      "breathe","breathing","breeze","brick","bridge","brief","bright","bring",
+      "broad","broke","broken","brother","brought","brown","brush","buffalo",
+      "build","building","built","buried","burn","burst","bus","bush",
+      "business","busy","but","butter","buy","by","cabin","cage",
+      "cake","call","calm","came","camera","camp","can","canal",
+      "cannot","cap","capital","captain","captured","car","carbon","card",
+      "care","careful","carefully","carried","carry","case","cast","castle",
+      "cat","catch","cattle","caught","cause","cave","cell","cent",
+      "center","central","century","certain","certainly","chain","chair","chamber",
+      "chance","change","changing","chapter","character","characteristic","charge","chart",
+      "check","cheese","chemical","chest","chicken","chief","child","children",
+      "choice","choose","chose","chosen","church","circle","circus","citizen",
+      "city","class","classroom","claws","clay","clean","clear","clearly",
+      "climate","climb","clock","close","closely","closer","cloth","clothes",
+      "clothing","cloud","club","coach","coal","coast","coat","coffee",
+      "cold","collect","college","colony","color","column","combination","combine",
+      "come","comfortable","coming","command","common","community","company","compare",
+      "compass","complete","completely","complex","composed","composition","compound","concerned",
+      "condition","congress","connected","consider","consist","consonant","constantly","construction",
+      "contain","continent","continued","contrast","control","conversation","cook","cookies",
+      "cool","copper","copy","corn","corner","correct","correctly","cost",
+      "cotton","could","count","country","couple","courage","course","court",
+      "cover","cow","cowboy","crack","cream","create","creature","crew",
+      "crop","cross","crowd","cry","cup","curious","current","curve",
+      "customs","cut","cutting","daily","damage","dance","danger","dangerous",
+      "dark","darkness","date","daughter","dawn","day","dead","deal",
+      "dear","death","decide","declared","deep","deeply","deer","definition",
+      "degree","depend","depth","describe","desert","design","desk","detail",
+      "determine","develop","development","diagram","diameter","did","die","differ",
+      "difference","different","difficult","difficulty","dig","dinner","direct","direction",
+      "directly","dirt","dirty","disappear","discover","discovery","discuss","discussion",
+      "disease","dish","distance","distant","divide","division","do","doctor",
+      "does","dog","doing","doll","dollar","done","donkey","door",
+      "dot","double","doubt","down","dozen","draw","drawn","dream",
+      "dress","drew","dried","drink","drive","driven","driver","driving",
+      "drop","dropped","drove","dry","duck","due","dug","dull",
+      "during","dust","duty","each","eager","ear","earlier","early",
+      "earn","earth","easier","easily","east","easy","eat","eaten",
+      "edge","education","effect","effort","egg","eight","either","electric",
+      "electricity","element","elephant","eleven","else","empty","end","enemy",
+      "energy","engine","engineer","enjoy","enough","enter","entire","entirely",
+      "environment","equal","equally","equator","equipment","escape","especially","essential",
+      "establish","even","evening","event","eventually","ever","every","everybody",
+      "everyone","everything","everywhere","evidence","exact","exactly","examine","example",
+      "excellent","except","exchange","excited","excitement","exciting","exclaimed","exercise",
+      "exist","expect","experience","experiment","explain","explanation","explore","express",
+      "expression","extra","eye","face","facing","fact","factor","factory",
+      "failed","fair","fairly","fall","fallen","familiar","family","famous",
+      "far","farm","farmer","farther","fast","fastened","faster","fat",
+      "father","favorite","fear","feathers","feature","fed","feed","feel",
+      "feet","fell","fellow","felt","fence","few","fewer","field",
+      "fierce","fifteen","fifth","fifty","fight","fighting","figure","fill",
+      "film","final","finally","find","fine","finest","finger","finish",
+      "fire","fireplace","firm","first","fish","five","fix","flag",
+      "flame","flat","flew","flies","flight","floating","floor","flow",
+      "flower","fly","fog","folks","follow","food","foot","football",
+      "for","force","foreign","forest","forget","forgot","forgotten","form",
+      "former","fort","forth","forty","forward","fought","found","four",
+      "fourth","fox","frame","free","freedom","frequently","fresh","friend",
+      "friendly","frighten","frog","from","front","frozen","fruit","fuel",
+      "full","fully","fun","function","funny","fur","furniture","further",
+      "future","gain","game","garage","garden","gas","gasoline","gate",
+      "gather","gave","general","generally","gentle","gently","get","getting",
+      "giant","gift","girl","give","given","giving","glad","glass",
+      "globe","go","goes","gold","golden","gone","good","goose",
+      "got","government","grabbed","grade","gradually","grain","grandfather","grandmother",
+      "graph","grass","gravity","gray","great","greater","greatest","greatly",
+      "green","grew","ground","group","grow","grown","growth","guard",
+      "guess","guide","gulf","gun","habit","had","hair","half",
+      "halfway","hall","hand","handle","handsome","hang","happen","happened",
+      "happily","happy","harbor","hard","harder","hardly","has","hat",
+      "have","having","hay","he","headed","heading","health","heard",
+      "hearing","heart","heat","heavy","height","held","hello","help",
+      "helpful","her","herd","here","herself","hidden","hide","high",
+      "higher","highest","highway","hill","him","himself","his","history",
+      "hit","hold","hole","hollow","home","honor","hope","horn",
+      "horse","hospital","hot","hour","house","how","however","huge",
+      "human","hundred","hung","hungry","hunt","hunter","hurried","hurry",
+      "hurt","husband","ice","idea","identity","if","ill","image",
+      "imagine","immediately","importance","important","impossible","improve","in","inch",
+      "include","including","income","increase","indeed","independent","indicate","individual",
+      "industrial","industry","influence","information","inside","instance","instant","instead",
+      "instrument","interest","interior","into","introduced","invented","involved","iron",
+      "is","island","it","its","itself","jack","jar","jet",
+      "job","join","joined","journey","joy","judge","jump","jungle",
+      "just","keep","kept","key","kids","kill","kind","kitchen",
+      "knew","knife","know","knowledge","known","label","labor","lack",
+      "lady","laid","lake","lamp","land","language","large","larger",
+      "largest","last","late","later","laugh","law","lay","layers",
+      "lead","leader","leaf","learn","least","leather","leave","leaving",
+      "led","left","leg","length","lesson","let","letter","level",
+      "library","lie","life","lift","light","like","likely","limited",
+      "line","lion","lips","liquid","list","listen","little","live",
+      "living","load","local","locate","location","log","lonely","long",
+      "longer","look","loose","lose","loss","lost","lot","loud",
+      "love","lovely","low","lower","luck","lucky","lunch","lungs",
+      "lying","machine","machinery","mad","made","magic","magnet","mail",
+      "main","mainly","major","make","making","man","managed","manner",
+      "manufacturing","many","map","mark","market","married","mass","massage",
+      "master","material","mathematics","matter","may","maybe","me","meal",
+      "mean","means","meant","measure","meat","medicine","meet","melted",
+      "member","memory","men","mental","merely","met","metal","method",
+      "mice","middle","might","mighty","mile","military","milk","mill",
+      "mind","mine","minerals","minute","mirror","missing","mission","mistake",
+      "mix","mixture","model","modern","molecular","moment","money","monkey",
+      "month","mood","moon","more","morning","most","mostly","mother",
+      "motion","motor","mountain","mouse","mouth","move","movement","movie",
+      "moving","mud","muscle","music","musical","must","my","myself",
+      "mysterious","nails","name","nation","national","native","natural","naturally",
+      "nature","near","nearby","nearer","nearest","nearly","necessary","neck",
+      "needed","needle","needs","negative","neighbor","neighborhood","nervous","nest",
+      "never","new","news","newspaper","next","nice","night","nine",
+      "no","nobody","nodded","noise","none","noon","nor","north",
+      "nose","not","note","noted","nothing","notice","noun","now",
+      "number","numeral","nuts","object","observe","obtain","occasionally","occur",
+      "ocean","of","off","offer","office","officer","official","oil",
+      "old","older","oldest","on","once","one","only","onto",
+      "open","operation","opinion","opportunity","opposite","or","orange","orbit",
+      "order","ordinary","organization","organized","origin","original","other","ought",
+      "our","ourselves","out","outer","outline","outside","over","own",
+      "owner","oxygen","pack","package","page","paid","pain","paint",
+      "pair","palace","pale","pan","paper","paragraph","parallel","parent",
+      "park","part","particles","particular","particularly","partly","parts","party",
+      "pass","passage","past","path","pattern","pay","peace","pen",
+      "pencil","people","per","percent","perfect","perfectly","perhaps","period",
+      "person","personal","pet","phrase","physical","piano","pick","picture",
+      "pictured","pie","piece","pig","pile","pilot","pine","pink",
+      "pipe","pitch","place","plain","plan","plane","planet","planned",
+      "planning","plant","plastic","plate","plates","play","pleasant","please",
+      "pleasure","plenty","plural","plus","pocket","poem","poet","poetry",
+      "point","pole","police","policeman","political","pond","pony","pool",
+      "poor","popular","population","porch","port","position","positive","possible",
+      "possibly","post","pot","potatoes","pound","pour","powder","power",
+      "powerful","practical","practice","prepare","present","president","press","pressure",
+      "pretty","prevent","previous","price","pride","primitive","principal","principle",
+      "printed","private","prize","probably","problem","process","produce","product",
+      "production","program","progress","promised","proper","properly","property","protection",
+      "proud","prove","provide","public","pull","pupil","pure","purple",
+      "purpose","push","put","putting","quarter","queen","question","quick",
+      "quickly","quiet","quietly","quite","rabbit","race","radio","railroad",
+      "rain","raise","ran","ranch","range","rapidly","rate","rather",
+      "raw","rays","reach","read","reader","ready","real","realize",
+      "rear","reason","recall","receive","recent","recently","recognize","record",
+      "red","refer","refused","region","regular","related","relationship","religious",
+      "remain","remarkable","remember","remove","repeat","replace","replied","report",
+      "represent","require","research","respect","rest","result","return","review",
+      "rhyme","rhythm","rice","rich","ride","riding","right","ring",
+      "rise","rising","river","road","roar","rock","rocket","rocky",
+      "rod","roll","roof","room","root","rope","rose","rough",
+      "round","route","row","rubbed","rubber","rule","ruler","run",
+      "running","rush","sad","saddle","safe","safety","said","sail",
+      "sale","salmon","salt","same","sand","sang","sat","satellites",
+      "satisfied","save","saved","saw","say","scale","scared","scene",
+      "school","science","scientific","scientist","score","screen","sea","search",
+      "season","seat","second","secret","section","see","seed","seeing",
+      "seems","seen","seldom","select","selection","sell","send","sense",
+      "sent","sentence","separate","series","serious","serve","service","sets",
+      "setting","settle","settlers","seven","several","shade","shadow","shake",
+      "shaking","shall","shallow","shape","share","sharp","she","sheep",
+      "sheet","shelf","shells","shelter","shine","shinning","ship","shirt",
+      "shoe","shoot","shop","shore","short","shorter","shot","should",
+      "shoulder","shout","show","shown","shut","sick","sides","sight",
+      "sign","signal","silence","silent","silk","silly","silver","similar",
+      "simple","simplest","simply","since","sing","single","sink","sister",
+      "sit","sitting","situation","six","size","skill","skin","sky",
+      "slabs","slave","sleep","slept","slide","slight","slightly","slip",
+      "slipped","slope","slow","slowly","small","smaller","smallest","smell",
+      "smile","smoke","smooth","snake","snow","so","soap","social",
+      "society","soft","softly","soil","solar","sold","soldier","solid",
+      "solution","solve","some","somebody","somehow","someone","something","sometime",
+      "somewhere","son","song","soon","sort","sound","source","south",
+      "southern","space","speak","special","species","specific","speech","speed",
+      "spell","spend","spent","spider","spin","spirit","spite","split",
+      "spoken","sport","spread","spring","square","stage","stairs","stand",
+      "standard","star","stared","start","state","statement","station","stay",
+      "steady","steam","steel","steep","stems","step","stepped","stick",
+      "stiff","still","stock","stomach","stone","stood","stop","stopped",
+      "store","storm","story","stove","straight","strange","stranger","straw",
+      "stream","street","strength","stretch","strike","string","strip","strong",
+      "stronger","struck","structure","struggle","stuck","student","studied","studying",
+      "subject","substance","success","successful","such","sudden","suddenly","sugar",
+      "suggest","suit","sum","summer","sun","sunlight","supper","supply",
+      "support","suppose","sure","surface","surprise","surrounded","swam","sweet",
+      "swept","swim","swimming","swing","swung","syllable","symbol","system",
+      "table","tail","take","taken","tales","talk","tall","tank",
+      "tape","task","taste","taught","tax","tea","teach","teacher",
+      "team","tears","teeth","telephone","television","tell","temperature","ten",
+      "tent","term","terrible","test","than","thank","that","thee",
+      "them","themselves","then","theory","there","therefore","these","they",
+      "thick","thin","thing","think","third","thirty","this","those",
+      "thou","though","thought","thousand","thread","three","threw","throat",
+      "through","throughout","throw","thrown","thumb","thus","thy","tide",
+      "tie","tight","tightly","till","time","tin","tiny","tip",
+      "tired","title","to","tobacco","today","together","told","tomorrow",
+      "tone","tongue","tonight","too","took","tool","top","topic",
+      "torn","total","touch","toward","tower","town","toy","trace",
+      "track","trade","traffic","trail","train","transportation","trap","travel",
+      "treated","tree","triangle","tribe","trick","tried","trip","troops",
+      "tropical","trouble","truck","trunk","truth","try","tube","tune",
+      "turn","twelve","twenty","twice","two","type","typical","uncle",
+      "under","underline","understanding","unhappy","union","unit","universe","unknown",
+      "unless","until","unusual","up","upon","upper","upward","us",
+      "use","useful","using","usual","usually","valley","valuable","value",
+      "vapor","variety","various","vast","vegetable","verb","vertical","very",
+      "vessels","victory","view","village","visit","visitor","voice","volume",
+      "vote","vowel","voyage","wagon","wait","walk","wall","want",
+      "war","warm","warn","was","wash","waste","watch","water",
+      "wave","way","we","weak","wealth","wear","weather","week",
+      "weigh","weight","welcome","well","went","were","west","western",
+      "wet","whale","what","whatever","wheat","wheel","when","whenever",
+      "where","wherever","whether","which","while","whispered","whistle","white",
+      "who","whole","whom","whose","why","wide","widely","wife",
+      "wild","will","willing","win","wind","window","wing","winter",
+      "wire","wise","wish","with","within","without","wolf","women",
+      "won","wonder","wonderful","wood","wooden","wool","word","wore",
+      "work","worker","world","worried","worry","worse","worth","would",
+      "wrapped","write","writer","writing","written","wrong","wrote","yard",
+      "year","yellow","yes","yesterday","yet","you","young","younger",
+      "your","yourself","youth","zero","zebra","zipper","zoo","zulu"
+    ];
+
+    function words(options) {
+
+      function word() {
+        if (options && options.maxLength > 1) {
+          return generateWordWithMaxLength();
+        } else {
+          return generateRandomWord();
+        }
+      }
+
+      function generateWordWithMaxLength() {
+        var rightSize = false;
+        var wordUsed;
+        while (!rightSize) {  
+          wordUsed = generateRandomWord();
+          if(wordUsed.length <= options.maxLength) {
+            rightSize = true;
+          }
+
+        }
+        return wordUsed;
+      }
+
+      function generateRandomWord() {
+        return wordList[randInt(wordList.length)];
+      }
+
+      function randInt(lessThan) {
+        return Math.floor(Math.random() * lessThan);
+      }
+
+      // No arguments = generate one word
+      if (typeof(options) === 'undefined') {
+        return word();
+      }
+
+      // Just a number = return that many words
+      if (typeof(options) === 'number') {
+        options = { exactly: options };
+      }
+
+      // options supported: exactly, min, max, join
+      if (options.exactly) {
+        options.min = options.exactly;
+        options.max = options.exactly;
+      }
+      
+      // not a number = one word par string
+      if (typeof(options.wordsPerString) !== 'number') {
+        options.wordsPerString = 1;
+      }
+
+      //not a function = returns the raw word
+      if (typeof(options.formatter) !== 'function') {
+        options.formatter = (word) => word;
+      }
+
+      //not a string = separator is a space
+      if (typeof(options.separator) !== 'string') {
+        options.separator = ' ';
+      }
+
+      var total = options.min + randInt(options.max + 1 - options.min);
+      var results = [];
+      var token = '';
+      var relativeIndex = 0;
+
+      for (var i = 0; (i < total * options.wordsPerString); i++) {
+        if (relativeIndex === options.wordsPerString - 1) {
+          token += options.formatter(word(), relativeIndex);
+        }
+        else {
+          token += options.formatter(word(), relativeIndex) + options.separator;
+        }
+        relativeIndex++;
+        if ((i + 1) % options.wordsPerString === 0) {
+          results.push(token);
+          token = ''; 
+          relativeIndex = 0;
+        }
+       
+      }
+      if (typeof options.join === 'string') {
+        results = results.join(options.join);
+      }
+
+      return results;
+    }
+
+    var randomWords$1 = words;
+    // Export the word list as it is often useful
+    words.wordList = wordList;
+
+    var alea = {exports: {}};
+
+    (function (module) {
+    	// A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
+    	// http://baagoe.com/en/RandomMusings/javascript/
+    	// https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
+    	// Original work is under MIT license -
+
+    	// Copyright (C) 2010 by Johannes Baagøe <baagoe@baagoe.org>
+    	//
+    	// Permission is hereby granted, free of charge, to any person obtaining a copy
+    	// of this software and associated documentation files (the "Software"), to deal
+    	// in the Software without restriction, including without limitation the rights
+    	// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    	// copies of the Software, and to permit persons to whom the Software is
+    	// furnished to do so, subject to the following conditions:
+    	//
+    	// The above copyright notice and this permission notice shall be included in
+    	// all copies or substantial portions of the Software.
+    	//
+    	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    	// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    	// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    	// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    	// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    	// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    	// THE SOFTWARE.
+
+
+
+    	(function(global, module, define) {
+
+    	function Alea(seed) {
+    	  var me = this, mash = Mash();
+
+    	  me.next = function() {
+    	    var t = 2091639 * me.s0 + me.c * 2.3283064365386963e-10; // 2^-32
+    	    me.s0 = me.s1;
+    	    me.s1 = me.s2;
+    	    return me.s2 = t - (me.c = t | 0);
+    	  };
+
+    	  // Apply the seeding algorithm from Baagoe.
+    	  me.c = 1;
+    	  me.s0 = mash(' ');
+    	  me.s1 = mash(' ');
+    	  me.s2 = mash(' ');
+    	  me.s0 -= mash(seed);
+    	  if (me.s0 < 0) { me.s0 += 1; }
+    	  me.s1 -= mash(seed);
+    	  if (me.s1 < 0) { me.s1 += 1; }
+    	  me.s2 -= mash(seed);
+    	  if (me.s2 < 0) { me.s2 += 1; }
+    	  mash = null;
+    	}
+
+    	function copy(f, t) {
+    	  t.c = f.c;
+    	  t.s0 = f.s0;
+    	  t.s1 = f.s1;
+    	  t.s2 = f.s2;
+    	  return t;
+    	}
+
+    	function impl(seed, opts) {
+    	  var xg = new Alea(seed),
+    	      state = opts && opts.state,
+    	      prng = xg.next;
+    	  prng.int32 = function() { return (xg.next() * 0x100000000) | 0; };
+    	  prng.double = function() {
+    	    return prng() + (prng() * 0x200000 | 0) * 1.1102230246251565e-16; // 2^-53
+    	  };
+    	  prng.quick = prng;
+    	  if (state) {
+    	    if (typeof(state) == 'object') copy(state, xg);
+    	    prng.state = function() { return copy(xg, {}); };
+    	  }
+    	  return prng;
+    	}
+
+    	function Mash() {
+    	  var n = 0xefc8249d;
+
+    	  var mash = function(data) {
+    	    data = String(data);
+    	    for (var i = 0; i < data.length; i++) {
+    	      n += data.charCodeAt(i);
+    	      var h = 0.02519603282416938 * n;
+    	      n = h >>> 0;
+    	      h -= n;
+    	      h *= n;
+    	      n = h >>> 0;
+    	      h -= n;
+    	      n += h * 0x100000000; // 2^32
+    	    }
+    	    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
+    	  };
+
+    	  return mash;
+    	}
+
+
+    	if (module && module.exports) {
+    	  module.exports = impl;
+    	} else if (define && define.amd) {
+    	  define(function() { return impl; });
+    	} else {
+    	  this.alea = impl;
+    	}
+
+    	})(
+    	  commonjsGlobal,
+    	  module,    // present in node.js
+    	  (typeof undefined) == 'function'    // present with an AMD loader
+    	);
+    } (alea));
+
+    var seedrandom = alea.exports;
+
+    /**
+     * Uses the `seedrandom` package to replace Math.random() with a seedable PRNG.
+     *
+     * @param seed An optional seed. If none is given, a random seed will be generated.
+     * @returns The seed value.
+     */
+    function setSeed(seed = Math.random().toString()) {
+        Math.random = seedrandom(seed);
+        return seed;
+    }
     function repeat(array, repetitions, unpack = false) {
         const arr_isArray = Array.isArray(array);
         const rep_isArray = Array.isArray(repetitions);
@@ -1166,7 +1876,8 @@ var jsPsychModule = (function (exports) {
                 // test to make sure the new neighbor isn't equal to the old one
                 while (equalityTest(random_shuffle[i + 1], random_shuffle[random_pick]) ||
                     equalityTest(random_shuffle[i + 1], random_shuffle[random_pick + 1]) ||
-                    equalityTest(random_shuffle[i + 1], random_shuffle[random_pick - 1])) {
+                    equalityTest(random_shuffle[i + 1], random_shuffle[random_pick - 1]) ||
+                    equalityTest(random_shuffle[i], random_shuffle[random_pick])) {
                     random_pick = Math.floor(Math.random() * (random_shuffle.length - 2)) + 1;
                 }
                 const new_neighbor = random_shuffle[random_pick];
@@ -1272,6 +1983,64 @@ var jsPsychModule = (function (exports) {
         }
         return result;
     }
+    /**
+     * Generate a random integer from `lower` to `upper`, inclusive of both end points.
+     * @param lower The lowest value it is possible to generate
+     * @param upper The highest value it is possible to generate
+     * @returns A random integer
+     */
+    function randomInt(lower, upper) {
+        if (upper < lower) {
+            throw new Error("Upper boundary must be less than or equal to lower boundary");
+        }
+        return lower + Math.floor(Math.random() * (upper - lower + 1));
+    }
+    /**
+     * Generates a random sample from a Bernoulli distribution.
+     * @param p The probability of sampling 1.
+     * @returns 0, with probability 1-p, or 1, with probability p.
+     */
+    function sampleBernoulli(p) {
+        return Math.random() <= p ? 1 : 0;
+    }
+    function sampleNormal(mean, standard_deviation) {
+        return randn_bm() * standard_deviation + mean;
+    }
+    function sampleExponential(rate) {
+        return -Math.log(Math.random()) / rate;
+    }
+    function sampleExGaussian(mean, standard_deviation, rate, positive = false) {
+        let s = sampleNormal(mean, standard_deviation) + sampleExponential(rate);
+        if (positive) {
+            while (s <= 0) {
+                s = sampleNormal(mean, standard_deviation) + sampleExponential(rate);
+            }
+        }
+        return s;
+    }
+    /**
+     * Generate one or more random words.
+     *
+     * This is a wrapper function for the {@link https://www.npmjs.com/package/random-words `random-words` npm package}.
+     *
+     * @param opts An object with optional properties `min`, `max`, `exactly`,
+     * `join`, `maxLength`, `wordsPerString`, `separator`, and `formatter`.
+     *
+     * @returns An array of words or a single string, depending on parameter choices.
+     */
+    function randomWords(opts) {
+        return randomWords$1(opts);
+    }
+    // Box-Muller transformation for a random sample from normal distribution with mean = 0, std = 1
+    // https://stackoverflow.com/a/36481059/3726673
+    function randn_bm() {
+        var u = 0, v = 0;
+        while (u === 0)
+            u = Math.random(); //Converting [0,1) to (0,1)
+        while (v === 0)
+            v = Math.random();
+        return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    }
     function unpackArray(array) {
         const out = {};
         for (const x of array) {
@@ -1287,6 +2056,7 @@ var jsPsychModule = (function (exports) {
 
     var randomization = /*#__PURE__*/Object.freeze({
         __proto__: null,
+        setSeed: setSeed,
         repeat: repeat,
         shuffle: shuffle,
         shuffleNoRepeats: shuffleNoRepeats,
@@ -1294,7 +2064,13 @@ var jsPsychModule = (function (exports) {
         sampleWithoutReplacement: sampleWithoutReplacement,
         sampleWithReplacement: sampleWithReplacement,
         factorial: factorial,
-        randomID: randomID
+        randomID: randomID,
+        randomInt: randomInt,
+        sampleBernoulli: sampleBernoulli,
+        sampleNormal: sampleNormal,
+        sampleExponential: sampleExponential,
+        sampleExGaussian: sampleExGaussian,
+        randomWords: randomWords
     });
 
     /**
@@ -1651,7 +2427,11 @@ var jsPsychModule = (function (exports) {
         // recursive downward search for active trial to extract timeline variable
         timelineVariable(variable_name) {
             if (typeof this.timeline_parameters == "undefined") {
-                return this.findTimelineVariable(variable_name);
+                const val = this.findTimelineVariable(variable_name);
+                if (typeof val === "undefined") {
+                    console.warn("Timeline variable " + variable_name + " not found.");
+                }
+                return val;
             }
             else {
                 // if progress.current_location is -1, then the timeline variable is being evaluated
@@ -1666,7 +2446,11 @@ var jsPsychModule = (function (exports) {
                     loc = loc - 1;
                 }
                 // now find the variable
-                return this.timeline_parameters.timeline[loc].timelineVariable(variable_name);
+                const val = this.timeline_parameters.timeline[loc].timelineVariable(variable_name);
+                if (typeof val === "undefined") {
+                    console.warn("Timeline variable " + variable_name + " not found.");
+                }
+                return val;
             }
         }
         // recursively get all the timeline variables for this trial
@@ -1841,6 +2625,10 @@ var jsPsychModule = (function (exports) {
              * is the page retrieved directly via file:// protocol (true) or hosted on a server (false)?
              */
             this.file_protocol = false;
+            /**
+             * is the experiment running in `simulate()` mode
+             */
+            this.simulation_mode = null;
             // storing a single webaudio context to prevent problems with multiple inits
             // of jsPsych
             this.webaudio_context = null;
@@ -1910,6 +2698,13 @@ var jsPsychModule = (function (exports) {
                 yield this.finished;
             });
         }
+        simulate(timeline, simulation_mode = "data-only", simulation_options = {}) {
+            return __awaiter(this, void 0, void 0, function* () {
+                this.simulation_mode = simulation_mode;
+                this.simulation_options = simulation_options;
+                yield this.run(timeline);
+            });
+        }
         getProgress() {
             return {
                 total_trials: typeof this.timeline === "undefined" ? undefined : this.timeline.length(),
@@ -1933,6 +2728,7 @@ var jsPsychModule = (function (exports) {
             return this.DOM_container;
         }
         finishTrial(data = {}) {
+            var _a;
             if (this.current_trial_finished) {
                 return;
             }
@@ -1945,7 +2741,7 @@ var jsPsychModule = (function (exports) {
             // write the data from the trial
             this.data.write(data);
             // get back the data with all of the defaults in
-            const trial_data = this.data.get().filter({ trial_index: this.global_trial_index });
+            const trial_data = this.data.getLastTrialData();
             // for trial-level callbacks, we just want to pass in a reference to the values
             // of the DataCollection, for easy access and editing.
             const trial_data_values = trial_data.values()[0];
@@ -1973,51 +2769,66 @@ var jsPsychModule = (function (exports) {
                 }
             }
             // handle extension callbacks
-            if (Array.isArray(current_trial.extensions)) {
-                for (const extension of current_trial.extensions) {
-                    const ext_data_values = this.extensions[extension.type.info.name].on_finish(extension.params);
-                    Object.assign(trial_data_values, ext_data_values);
+            const extensionCallbackResults = ((_a = current_trial.extensions) !== null && _a !== void 0 ? _a : []).map((extension) => this.extensions[extension.type.info.name].on_finish(extension.params));
+            const onExtensionCallbacksFinished = () => {
+                // about to execute lots of callbacks, so switch context.
+                this.internal.call_immediate = true;
+                // handle callback at plugin level
+                if (typeof current_trial.on_finish === "function") {
+                    current_trial.on_finish(trial_data_values);
                 }
-            }
-            // about to execute lots of callbacks, so switch context.
-            this.internal.call_immediate = true;
-            // handle callback at plugin level
-            if (typeof current_trial.on_finish === "function") {
-                current_trial.on_finish(trial_data_values);
-            }
-            // handle callback at whole-experiment level
-            this.opts.on_trial_finish(trial_data_values);
-            // after the above callbacks are complete, then the data should be finalized
-            // for this trial. call the on_data_update handler, passing in the same
-            // data object that just went through the trial's finish handlers.
-            this.opts.on_data_update(trial_data_values);
-            // done with callbacks
-            this.internal.call_immediate = false;
-            // wait for iti
-            if (typeof current_trial.post_trial_gap === null ||
-                typeof current_trial.post_trial_gap === "undefined") {
-                if (this.opts.default_iti > 0) {
-                    setTimeout(this.nextTrial, this.opts.default_iti);
-                }
-                else {
+                // handle callback at whole-experiment level
+                this.opts.on_trial_finish(trial_data_values);
+                // after the above callbacks are complete, then the data should be finalized
+                // for this trial. call the on_data_update handler, passing in the same
+                // data object that just went through the trial's finish handlers.
+                this.opts.on_data_update(trial_data_values);
+                // done with callbacks
+                this.internal.call_immediate = false;
+                // wait for iti
+                if (this.simulation_mode === "data-only") {
                     this.nextTrial();
                 }
+                else if (typeof current_trial.post_trial_gap === null ||
+                    typeof current_trial.post_trial_gap === "undefined") {
+                    if (this.opts.default_iti > 0) {
+                        setTimeout(this.nextTrial, this.opts.default_iti);
+                    }
+                    else {
+                        this.nextTrial();
+                    }
+                }
+                else {
+                    if (current_trial.post_trial_gap > 0) {
+                        setTimeout(this.nextTrial, current_trial.post_trial_gap);
+                    }
+                    else {
+                        this.nextTrial();
+                    }
+                }
+            };
+            // Strictly using Promise.resolve to turn all values into promises would be cleaner here, but it
+            // would require user test code to make the event loop tick after every simulated key press even
+            // if there are no async `on_finish` methods. Hence, in order to avoid a breaking change, we
+            // only rely on the event loop if at least one `on_finish` method returns a promise.
+            if (extensionCallbackResults.some((result) => typeof result.then === "function")) {
+                Promise.all(extensionCallbackResults.map((result) => Promise.resolve(result).then((ext_data_values) => {
+                    Object.assign(trial_data_values, ext_data_values);
+                }))).then(onExtensionCallbacksFinished);
             }
             else {
-                if (current_trial.post_trial_gap > 0) {
-                    setTimeout(this.nextTrial, current_trial.post_trial_gap);
+                for (const values of extensionCallbackResults) {
+                    Object.assign(trial_data_values, values);
                 }
-                else {
-                    this.nextTrial();
-                }
+                onExtensionCallbacksFinished();
             }
         }
-        endExperiment(end_message) {
+        endExperiment(end_message = "", data = {}) {
             this.timeline.end_message = end_message;
             this.timeline.end();
             this.pluginAPI.cancelAllKeyboardResponses();
             this.pluginAPI.clearAllTimeouts();
-            this.finishTrial();
+            this.finishTrial(data);
         }
         endCurrentTimeline() {
             this.timeline.endActiveNode();
@@ -2195,6 +3006,9 @@ var jsPsychModule = (function (exports) {
             this.current_trial_finished = false;
             // process all timeline variables for this trial
             this.evaluateTimelineVariables(trial);
+            if (typeof trial.type === "string") {
+                throw new MigrationError("A string was provided as the trial's `type` parameter. Since jsPsych v7, the `type` parameter needs to be a plugin object.");
+            }
             // instantiate the plugin for this trial
             trial.type = Object.assign(Object.assign({}, autoBind(new trial.type(this))), { info: trial.type.info });
             // evaluate variables that are functions
@@ -2240,10 +3054,53 @@ var jsPsychModule = (function (exports) {
                     }
                 }
             };
-            const trial_complete = trial.type.trial(this.DOM_target, trial, load_callback);
+            let trial_complete;
+            if (!this.simulation_mode) {
+                trial_complete = trial.type.trial(this.DOM_target, trial, load_callback);
+            }
+            if (this.simulation_mode) {
+                // check if the trial supports simulation
+                if (trial.type.simulate) {
+                    let trial_sim_opts;
+                    if (!trial.simulation_options) {
+                        trial_sim_opts = this.simulation_options.default;
+                    }
+                    if (trial.simulation_options) {
+                        if (typeof trial.simulation_options == "string") {
+                            if (this.simulation_options[trial.simulation_options]) {
+                                trial_sim_opts = this.simulation_options[trial.simulation_options];
+                            }
+                            else if (this.simulation_options.default) {
+                                console.log(`No matching simulation options found for "${trial.simulation_options}". Using "default" options.`);
+                                trial_sim_opts = this.simulation_options.default;
+                            }
+                            else {
+                                console.log(`No matching simulation options found for "${trial.simulation_options}" and no "default" options provided. Using the default values provided by the plugin.`);
+                                trial_sim_opts = {};
+                            }
+                        }
+                        else {
+                            trial_sim_opts = trial.simulation_options;
+                        }
+                    }
+                    trial_sim_opts = this.utils.deepCopy(trial_sim_opts);
+                    trial_sim_opts = this.replaceFunctionsWithValues(trial_sim_opts, null);
+                    if ((trial_sim_opts === null || trial_sim_opts === void 0 ? void 0 : trial_sim_opts.simulate) === false) {
+                        trial_complete = trial.type.trial(this.DOM_target, trial, load_callback);
+                    }
+                    else {
+                        trial_complete = trial.type.simulate(trial, (trial_sim_opts === null || trial_sim_opts === void 0 ? void 0 : trial_sim_opts.mode) || this.simulation_mode, trial_sim_opts, load_callback);
+                    }
+                }
+                else {
+                    // trial doesn't have a simulate method, so just run as usual
+                    trial_complete = trial.type.trial(this.DOM_target, trial, load_callback);
+                }
+            }
             // see if trial_complete is a Promise by looking for .then() function
             const is_promise = trial_complete && typeof trial_complete.then == "function";
-            if (!is_promise) {
+            // in simulation mode we let the simulate function call the load_callback always.
+            if (!is_promise && !this.simulation_mode) {
                 load_callback();
             }
             // done with callbacks
@@ -2251,16 +3108,16 @@ var jsPsychModule = (function (exports) {
         }
         evaluateTimelineVariables(trial) {
             for (const key of Object.keys(trial)) {
-                // timeline variables on the root level
                 if (typeof trial[key] === "object" &&
                     trial[key] !== null &&
                     typeof trial[key].timelineVariablePlaceholder !== "undefined") {
-                    /*trial[key].toString().replace(/\s/g, "") ==
-                      "function(){returntimeline.timelineVariable(varname);}"
-                  )*/ trial[key] = trial[key].timelineVariableFunction();
+                    trial[key] = trial[key].timelineVariableFunction();
                 }
                 // timeline variables that are nested in objects
-                if (typeof trial[key] === "object" && trial[key] !== null) {
+                if (typeof trial[key] === "object" &&
+                    trial[key] !== null &&
+                    key !== "timeline" &&
+                    key !== "timeline_variables") {
                     this.evaluateTimelineVariables(trial[key]);
                 }
             }
@@ -2303,9 +3160,11 @@ var jsPsychModule = (function (exports) {
             else if (typeof obj === "object") {
                 if (info === null || !info.nested) {
                     for (const key of Object.keys(obj)) {
-                        if (key === "type") {
+                        if (key === "type" || key === "timeline" || key === "timeline_variables") {
                             // Ignore the object's `type` field because it contains a plugin and we do not want to
-                            // call plugin functions
+                            // call plugin functions. Also ignore `timeline` and `timeline_variables` because they
+                            // are used in the `trials` parameter of the preload plugin and we don't want to actually
+                            // evaluate those in that context.
                             continue;
                         }
                         obj[key] = this.replaceFunctionsWithValues(obj[key], null);
@@ -2369,6 +3228,9 @@ var jsPsychModule = (function (exports) {
         }
         checkExclusions(exclusions) {
             return __awaiter(this, void 0, void 0, function* () {
+                if (exclusions.min_width || exclusions.min_height || exclusions.audio) {
+                    console.warn("The exclusions option in `initJsPsych()` is deprecated and will be removed in a future version. We recommend using the browser-check plugin instead. See https://www.jspsych.org/latest/plugins/browser-check/.");
+                }
                 // MINIMUM SIZE
                 if (exclusions.min_width || exclusions.min_height) {
                     const mw = exclusions.min_width || 0;
@@ -2432,6 +3294,7 @@ var jsPsychModule = (function (exports) {
         }
     }
 
+    // __rollup-babel-import-regenerator-runtime__
     // temporary patch for Safari
     if (typeof window !== "undefined" &&
         window.hasOwnProperty("webkitAudioContext") &&
@@ -2449,7 +3312,30 @@ var jsPsychModule = (function (exports) {
      * @returns A new JsPsych instance
      */
     function initJsPsych(options) {
-        return new JsPsych(options);
+        const jsPsych = new JsPsych(options);
+        // Handle invocations of non-existent v6 methods with migration errors
+        const migrationMessages = {
+            init: "`jsPsych.init()` was replaced by `initJsPsych()` in jsPsych v7.",
+            ALL_KEYS: 'jsPsych.ALL_KEYS was replaced by the "ALL_KEYS" string in jsPsych v7.',
+            NO_KEYS: 'jsPsych.NO_KEYS was replaced by the "NO_KEYS" string in jsPsych v7.',
+            // Getter functions that were renamed
+            currentTimelineNodeID: "`currentTimelineNodeID()` was renamed to `getCurrentTimelineNodeID()` in jsPsych v7.",
+            progress: "`progress()` was renamed to `getProgress()` in jsPsych v7.",
+            startTime: "`startTime()` was renamed to `getStartTime()` in jsPsych v7.",
+            totalTime: "`totalTime()` was renamed to `getTotalTime()` in jsPsych v7.",
+            currentTrial: "`currentTrial()` was renamed to `getCurrentTrial()` in jsPsych v7.",
+            initSettings: "`initSettings()` was renamed to `getInitSettings()` in jsPsych v7.",
+            allTimelineVariables: "`allTimelineVariables()` was renamed to `getAllTimelineVariables()` in jsPsych v7.",
+        };
+        Object.defineProperties(jsPsych, Object.fromEntries(Object.entries(migrationMessages).map(([key, message]) => [
+            key,
+            {
+                get() {
+                    throw new MigrationError(message);
+                },
+            },
+        ])));
+        return jsPsych;
     }
 
     exports.JsPsych = JsPsych;
