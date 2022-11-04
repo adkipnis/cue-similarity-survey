@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Alex Kipnis">
     <script src="jspsych/dist/jspsych.js"></script>
+    <script src="jspsych/dist/plugin-html-keyboard-response.js"></script>
 
     <!-- Style -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +27,7 @@
 <body id="body">
 
     <!-- Welcome -->
-    <div id="page_welcome" class="center-screen" id="welcome" style="display:none;">
+    <div id="page_welcome" class="center-screen" id="welcome" style="display:block;">
         <center>
             <h1>Welcome!</h1><br>
             <h4>
@@ -191,13 +192,15 @@
 
     <!-- Main Page -->
 
-    <div id="page_main" class="center-screen" id="main" style="display:block;">
+    <div id="page_main" class="center-screen" id="main" style="display:none;">
         <center>
-            <!-- <div id="left_stim"></div>
-            <div id="right_stim"></div> -->
-            <h4>
-                <i>Nothing here, yet...</i>
-            </h4>
+            <div id="canvas">
+                <div id="left_stim"'><img src=' cues/c_A.png'></img></div>
+                <div id="right_stim"'><img src=' cues/c_B.png'></img></div>
+            </div>
+            <div>
+                <i>This page is in construction...</i>
+            </div>
     </div>
 
     <!-- Exit, Timeout, End -->

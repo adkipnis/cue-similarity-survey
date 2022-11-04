@@ -75,6 +75,7 @@ function loadMain() {
     changePage("page_fs", "page_main");
     let elem = document.body;
     openFullscreen(elem);
+    jsPsych.run(timeLine);
 }
 
 function exit(page) {
@@ -130,5 +131,12 @@ let cueNodes = initCues();
 // insertImage(cueNodes[0], "left_stim")
 // insertImage(cueNodes[1], "right_stim")
 
+
+// JSPsych
+let welcome = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: "Welcome to the experiment. Press any key to begin."
+};
+timeLine.push(welcome);
 // // Testing
 // console.log(getTimeStamp());
