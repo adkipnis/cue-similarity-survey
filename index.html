@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Alex Kipnis">
     <script src="jspsych/dist/jspsych.js"></script>
-    <script src="js/experiment.js"></script>
 
     <!-- Style -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,18 +23,12 @@
     <link href="css/experiment.css" rel="stylesheet" type="text/css" />
 </head>
 
-<style>
-    body {
-        background-color: rgb(241, 241, 241);
-    }
-</style>
-
-<body>
+<body id="body">
 
     <!-- <table id="canvas"></table> -->
 
     <!-- Welcome -->
-    <div id="page_welcome" class="center-screen" id="welcome">
+    <div id="page_welcome" class="center-screen" id="welcome" style="display:block;">
         <center>
             <h1>Welcome!</h1><br>
             <h4>
@@ -224,6 +217,8 @@
                 <b><i>123456789</i></b><br>You may now close this tab.
             </h4>
     </div>
+
+    <script src="js/experiment.js"></script>
 </body>
 
 </html>

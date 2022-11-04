@@ -1,6 +1,8 @@
 // Author: Alex Kipnis
-// let jsPsych = initJsPsych();
+
+let jsPsych = initJsPsych();
 const timestamp = getTimeStamp();
+let subject_id = jsPsych.randomization.randomID(8);
 let fs = false;
 
 // Helpers
@@ -74,7 +76,6 @@ function loadMain() {
     openFullscreen(elem);
 }
 
-
 function exit(page) {
     if (document.fullscreenElement != null) closeFullscreen();
     // if (page == "page_main") {
@@ -87,5 +88,27 @@ function exit(page) {
     changePage(page, "page_exit");
 }
 
+
+// Stimuli
+// cues
+let cueFiles = [];
+for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
+
+function initImage(src, visibility = "") {
+    var img = new Image();
+    img.src = src;
+    img.style.visibility = visibility;
+    document.getElementById('body').appendChild(img);
+}
+
+function initImages() {
+    let cueNodes = cueFiles.map(cueFile => initImage(cueFile, visibility = "hidden"));
+}
+
+function showImage(img) {
+    img.style.visibility = "";
+}
+
+initImages();
 // // Testing
 // console.log(getTimeStamp());
