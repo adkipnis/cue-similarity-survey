@@ -1,6 +1,7 @@
 // Author: Alex Kipnis
 
 let jsPsych = initJsPsych();
+let timeLine = [];
 const timestamp = getTimeStamp();
 let subject_id = jsPsych.randomization.randomID(8);
 let fs = false;
@@ -91,24 +92,43 @@ function exit(page) {
 
 // Stimuli
 // cues
-let cueFiles = [];
-for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
+// function updateDiv(id, width, height, left = 0, top = 0) {
+//     let div = document.getElementById(id);
+//     div.style.width = width + "px";
+//     div.style.height = height + "px";
+//     // div.style.position = "absolute";
+//     div.style.left = left + "%";
+//     div.style.top = top + "%";
+// }
+
+// function initCanvas(h = 400) {
+//     updateDiv("left_stim", h, h, left = 5000, top = -330);
+//     updateDiv("right_stim", h, h);
+// }
 
 function initImage(src, visibility = "") {
     var img = new Image();
     img.src = src;
     img.style.visibility = visibility;
-    document.getElementById('body').appendChild(img);
+    // document.getElementById('body').appendChild(img);
+    return img
 }
 
-function initImages() {
-    let cueNodes = cueFiles.map(cueFile => initImage(cueFile, visibility = "hidden"));
+function initCues() {
+    return cueFiles.map(cueFile => initImage(cueFile));
 }
 
-function showImage(img) {
-    img.style.visibility = "";
-}
+// function insertImage(img, id) {
+//     document.getElementById(id).appendChild(img);
+// }
 
-initImages();
+
+let cueFiles = [];
+for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
+let cueNodes = initCues();
+// initCanvas();
+// insertImage(cueNodes[0], "left_stim")
+// insertImage(cueNodes[1], "right_stim")
+
 // // Testing
 // console.log(getTimeStamp());
