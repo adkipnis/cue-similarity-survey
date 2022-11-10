@@ -91,44 +91,20 @@ function exit(page) {
 
 
 // Stimuli
-// cues
-// function updateDiv(id, width, height, left = 0, top = 0) {
-//     let div = document.getElementById(id);
-//     div.style.width = width + "px";
-//     div.style.height = height + "px";
-//     // div.style.position = "absolute";
-//     div.style.left = left + "%";
-//     div.style.top = top + "%";
-// }
-
-// function initCanvas(h = 400) {
-//     updateDiv("left_stim", h, h, left = 5000, top = -330);
-//     updateDiv("right_stim", h, h);
-// }
-
-function initImage(src, visibility = "") {
-    var img = new Image();
+function initImage(src, id, visibility = "") {
+    let img = new Image();
     img.src = src;
     img.style.visibility = visibility;
-    // document.getElementById('body').appendChild(img);
-    return img
+    document.getElementById(id).appendChild(img);
 }
 
-function initCues() {
-    return cueFiles.map(cueFile => initImage(cueFile));
-}
-
-// function insertImage(img, id) {
-//     document.getElementById(id).appendChild(img);
+// function initCues() {
+//     return cueFiles.map(cueFile => initImage(cueFile));
 // }
-
+// let cueNodes = initCues();
 
 let cueFiles = [];
 for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
-let cueNodes = initCues();
-// initCanvas();
-// insertImage(cueNodes[0], "left_stim")
-// insertImage(cueNodes[1], "right_stim")
- 
-// // Testing
-// console.log(getTimeStamp());
+initImage(cueFiles[0], "left_stim")
+initImage(cueFiles[1], "right_stim")
+    // console.log(getTimeStamp());

@@ -14,27 +14,27 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
-    <link href="css/mobile.css" media="screen and (min-width: 0px) and (max-width: 600px)" rel="stylesheet"
+    <!-- <link href="css/mobile.css" media="screen and (min-width: 0px) and (max-width: 600px)" rel="stylesheet"
         type="text/css" />
     <link href="css/tab.css" media="screen and (min-width : 601px) and (max-width: 949px)" rel="stylesheet"
         type="text/css" />
     <link href="css/laptop.css" media="screen and (min-width : 950px) and (max-width: 1599px)" rel="stylesheet"
         type="text/css" />
-    <link href="css/desktop.css" media="screen and (min-width : 1600px)" rel="stylesheet" type="text/css" />
+    <link href="css/desktop.css" media="screen and (min-width : 1600px)" rel="stylesheet" type="text/css" /> -->
     <link href="css/experiment.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body id="body">
 
     <!-- Welcome -->
-    <div id="page_welcome" class="center-screen" id="welcome" style="display:block;">
+    <div id="page_welcome" class="center-screen" id="welcome" style="display:none;">
         <center>
             <h1>Welcome!</h1><br>
-            <h4>
+            <h3>
                 If you want to participate in this experiment, please press the button
                 below.<br>If you have any dark screen filter active on your browser, please turn it off.
                 <!-- <br>The experiment will enter full screen mode upon starting. -->
-            </h4><br><br>
+            </h3><br><br>
             <button class='buttonG' onclick=" loadConsent()">Start</button>
     </div>
 
@@ -183,43 +183,52 @@
     <!-- Full Screen -->
     <div id="page_fs" class="center-screen" style="display:none;">
         <center>
-            <h4>
+            <h3>
                 Awesome, thanks for agreeing to participate!<br>The experiment will enter full screen mode once you
                 start.
-            </h4><br><br>
+            </h3><br><br>
             <button class='buttonG' onclick=" loadMain()">Start Experiment</button>
     </div>
 
     <!-- Main Page -->
 
-    <div id="page_main" class="center-screen" id="main" style="display:none;">
-        <center>
-            <div id="canvas">
-                <div id="left_stim"'><img src=' cues/c_A.png'></img></div>
-                <div id="right_stim"'><img src=' cues/c_B.png'></img></div>
+    <div id="page_main" class="center-screen" style="display:block;">
+        <div id="canvas">
+            <div id="left_stim"'></div>
+            <div id="right_stim"'></div>
+        </div>
+
+        <div>
+            <div id="container">
+                <label>Left</label>
+                <div class="slidecontainer">
+                    <input type="range" min="1" max="100" value="50" step="any" class="slider" id="similarityJudgement">
+                </div>
+                <label>Right</label>
+                <br>
+                <div id="explanation">Drag the slider to display the current value.</div>
             </div>
-            <div>
-                <i>This page is in construction...</i>
-            </div>
+            <!-- <i>This page is in construction...</i> -->
+        </div>
     </div>
 
     <!-- Exit, Timeout, End -->
     <div id="page_exit" class="center-screen" id="exit" style="display:none;">
         <center>
-            <h4>You did not consent to participate. Maybe another time!<br>You may now close this tab.</h4>
+            <h3>You did not consent to participate. Maybe another time!<br>You may now close this tab.</h3>
     </div>
 
     <div id="page_timeout" class="center-screen" id="exit" style="display:none;">
         <center>
-            <h4>Sorry! Your experiment got timed out as no response was obtained for 60 seconds. None of your data was
-                recorded. Unfortunately, we will not be able to pay you.<br>You may now close this tab.</h4>
+            <h3>Sorry! Your experiment got timed out as no response was obtained for 60 seconds. None of your data was
+                recorded. Unfortunately, we will not be able to pay you.<br>You may now close this tab.</h3>
     </div>
 
     <div id="page_end" class="center-screen" id="end" style="display:none;">
         <center>
-            <h4>Thank you for participating in our study! Your responses have been recorded. Your completion code is:
+            <h3>Thank you for participating in our study! Your responses have been recorded. Your completion code is:
                 <b><i>123456789</i></b><br>You may now close this tab.
-            </h4>
+            </h3>
     </div>
 
     <script src="js/experiment.js"></script>
