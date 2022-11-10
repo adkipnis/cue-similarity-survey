@@ -1,9 +1,11 @@
 html {
-    background-image: url("background.jpg");
-    background-size: cover;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+
+    background-image: url("background.jpg");
+    background-size: cover;
     font-family: 'Crimson Pro', serif;
     font-size: 25px;
 }
@@ -28,7 +30,7 @@ h1 {
 
 h2 {
     font-size: 30px;
-    margin-top: 4%;
+    margin-top: 40px;
     margin-left: var(--magin-sides);
     font-weight: bold;
     text-align: left;
@@ -67,7 +69,7 @@ img {
     /* border: 1px solid #000; */
 }
 
-.center-screen {
+.center-pre {
     position: absolute;
     margin: auto;
     width: 100%;
@@ -75,28 +77,30 @@ img {
     transform: translate(0, -50%);
 }
 
+.center-peri {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
 /* Canvas */
-.main {
-    position: relative;
-}
-
-#canvas {
-    margin: auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
+.flexbox {
     height: 350px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-#left_stim {
-    float: left;
+.canvas-item {
+    margin: 5%;
+    min-height: 100px;
 }
 
-#right_stim {
-    float: right;
+label {
+    margin: 20px;
 }
-
 
 /* Buttons */
 .buttonG {
@@ -153,7 +157,7 @@ img {
 }
 
 .slidecontainer {
-    width: 70%;
+    width: 800px;
 }
 
 .slider {
@@ -172,4 +176,47 @@ img {
     height: 1 px;
     margin: 5px;
     text-align: center;
+}
+
+/* visual aids */
+
+.axis {
+    position: absolute;
+}
+
+.cross-axis {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 100%;
+    background-color: blue;
+}
+
+.main-axis {
+    top: 50%;
+    transform: translateY(-50%);
+    height: 5px;
+    width: 100%;
+    background-color: red;
+}
+
+.axis::after {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    font-size: 2em;
+}
+
+.main-axis::after {
+    position: absolute;
+    content: 'Main Axis';
+    color: red;
+}
+
+.cross-axis::after {
+    white-space: nowrap;
+    content: 'Cross Axis';
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    color: blue;
 }

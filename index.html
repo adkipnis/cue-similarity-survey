@@ -27,19 +27,20 @@
 <body id="body">
 
     <!-- Welcome -->
-    <div id="page_welcome" class="center-screen" id="welcome" style="display:none;">
+    <div id="page_welcome" class="center-pre" id="welcome" style="display:none;">
         <center>
-            <h1>Welcome!</h1><br>
+            <h1>Welcome!</h1>
             <h3>
                 If you want to participate in this experiment, please press the button
                 below.<br>If you have any dark screen filter active on your browser, please turn it off.
                 <!-- <br>The experiment will enter full screen mode upon starting. -->
-            </h3><br><br>
+            </h3>
+            <br>
             <button class='buttonG' onclick=" loadConsent()">Start</button>
     </div>
 
     <!-- Consent -->
-    <div id="page_consent" id="consent" style="display:none;">
+    <div id="page_consent" style="display:none;">
         <center>
             <br><br><br><br>
             <h1>Study Consent Form</h1>
@@ -181,52 +182,55 @@
     </div>
 
     <!-- Full Screen -->
-    <div id="page_fs" class="center-screen" style="display:none;">
+    <div id="page_fs" class="center-pre" style="display:none;">
         <center>
             <h3>
                 Awesome, thanks for agreeing to participate!<br>The experiment will enter full screen mode once you
                 start.
-            </h3><br><br>
+            </h3><br>
             <button class='buttonG' onclick=" loadMain()">Start Experiment</button>
     </div>
 
     <!-- Main Page -->
 
-    <div id="page_main" class="center-screen" style="display:block;">
-        <div id="canvas">
-            <div id="left_stim"'></div>
-            <div id="right_stim"'></div>
+    <div id="page_main" class="center-peri" style="display:block;">
+        <div class="flexbox">
+            <div class="canvas-item" id="left_stim"></div>
+            <div class="canvas-item" id="right_stim"></div>
         </div>
-
-        <div>
-            <div id="container">
-                <label>Left</label>
-                <div class="slidecontainer">
-                    <input type="range" min="1" max="100" value="50" step="any" class="slider" id="similarityJudgement">
-                </div>
-                <label>Right</label>
-                <br>
-                <div id="explanation">Drag the slider to display the current value.</div>
+        <br><br>
+        <div class="flexbox" style=" height: 0px;">
+            <label>0%</label>
+            <div class="slidecontainer">
+                <input type="range" min="1" max="100" value="51.2" step="any" class="slider" id="similarityJudgement">
             </div>
-            <!-- <i>This page is in construction...</i> -->
+            <label>100%</label>
         </div>
+        <br><br>
+        <div class="flexbox" style=" height: 0px;">
+            <p id="slider-instructions">How similar are the two items? (Press <i>spacebar</i> when done.)</p>
+        </div>
+        <!-- <div class="axis main-axis"></div> -->
+        <!-- <div class="axis cross-axis"></div> -->
     </div>
 
     <!-- Exit, Timeout, End -->
-    <div id="page_exit" class="center-screen" id="exit" style="display:none;">
+    <div id="page_exit" class="center-pre" id="exit" style="display:none;">
         <center>
             <h3>You did not consent to participate. Maybe another time!<br>You may now close this tab.</h3>
     </div>
 
-    <div id="page_timeout" class="center-screen" id="exit" style="display:none;">
+    <div id="page_timeout" class="center-pre" id="exit" style="display:none;">
         <center>
-            <h3>Sorry! Your experiment got timed out as no response was obtained for 60 seconds. None of your data was
+            <h3>Sorry! Your experiment got timed out as no response was obtained for 60 seconds. None of your data
+                was
                 recorded. Unfortunately, we will not be able to pay you.<br>You may now close this tab.</h3>
     </div>
 
-    <div id="page_end" class="center-screen" id="end" style="display:none;">
+    <div id="page_end" class="center-pre" id="end" style="display:none;">
         <center>
-            <h3>Thank you for participating in our study! Your responses have been recorded. Your completion code is:
+            <h3>Thank you for participating in our study! Your responses have been recorded. Your completion code
+                is:
                 <b><i>123456789</i></b><br>You may now close this tab.
             </h3>
     </div>
