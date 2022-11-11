@@ -86,7 +86,8 @@ function nextStimulus(event) {
         let slider = document.getElementById("similarityJudgement");
         data["similarity_judgements"].push(slider.value);
         data["judgement_time"].push(getTimeStamp(0));
-        console.log(data);
+        clearCanvas();
+        displayCues(1, 0);
         event.preventDefault();
     }
 }
@@ -105,15 +106,32 @@ function exit(page) {
 
 
 // Stimuli
-function initImage(src, id, visibility = "") {
+function initImage(src) {
     let img = new Image();
     img.src = src;
-    img.style.visibility = visibility;
-    document.getElementById(id).appendChild(img);
+    return img
+    //
 }
+
+function displayCues(i, j) {
+    document.getElementById("left_stim").appendChild(cueImages[i]);
+    document.getElementById("right_stim").appendChild(cueImages[j]);
+}
+
+function clearCanvas() {
+    const ids = ["left_stim", "right_stim"];
+    for (let id of ids) {
+        const myNode = document.getElementById(id);
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.lastChild);
+        }
+    }
+}
+
 
 let cueFiles = [];
 for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
+let cueImages = cueFiles.map(f => initImage(f));
 
 
 // Data
@@ -132,6 +150,5 @@ var data = {
 
 
 // Testing
-initImage(cueFiles[0], "left_stim")
-initImage(cueFiles[1], "right_stim")
+displayCues(0, 1);
 // console.log(getTimeStamp());
