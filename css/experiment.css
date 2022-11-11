@@ -1,8 +1,7 @@
 html {
-    height: 100%;
-    display: flex;
+    /* display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: center; */
 
     background-image: url("background.jpg");
     background-size: cover;
@@ -11,7 +10,7 @@ html {
 }
 
 :root {
-    --magin-sides: 10%
+    --magin-sides: 15%
 }
 
 body {
@@ -21,7 +20,7 @@ body {
 h1 {
     font-size: 50px;
     font-weight: bold;
-    margin-bottom: 2%;
+    margin-bottom: 1%;
     margin-top: 0;
     margin-left: 5%;
     margin-right: 5%;
@@ -78,6 +77,8 @@ img {
 }
 
 .center-peri {
+    height: 100vh;
+    padding-top: 15%;
     display: flex;
     justify-content: center;
     align-items: center;

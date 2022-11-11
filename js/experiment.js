@@ -98,13 +98,12 @@ function initImage(src, id, visibility = "") {
     document.getElementById(id).appendChild(img);
 }
 
-// function initCues() {
-//     return cueFiles.map(cueFile => initImage(cueFile));
-// }
-// let cueNodes = initCues();
 
 let cueFiles = [];
 for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
+
+
+
 initImage(cueFiles[0], "left_stim")
 initImage(cueFiles[1], "right_stim")
     // console.log(getTimeStamp());
