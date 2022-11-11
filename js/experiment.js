@@ -2,9 +2,10 @@
 
 let jsPsych = initJsPsych();
 const timestamp = getTimeStamp();
-console.log(timestamp);
 let subject_id = jsPsych.randomization.randomID(8);
 let fs = true;
+let trialNum = 0;
+
 
 // Helpers
 function twoPad(n) {
@@ -27,6 +28,7 @@ function getTimeStamp(type = 1) {
     }
     return [year, ...T].join('-');
 }
+
 
 // Page navigation
 function changePage(hide, show, fullScreen = false) {
@@ -60,7 +62,6 @@ function closeFullscreen() {
     }
 }
 
-
 function loadConsent() {
     changePage("page_welcome", "page_consent");
 }
@@ -76,6 +77,7 @@ function loadFS() {
 function loadMain() {
     changePage("page_fs", "page_main", fullScreen = fs);
     data["survey_time"] = getTimeStamp();
+    displayCues(trials[trialNum]);
     window.addEventListener("keydown", event => {
         nextStimulus(event);
     })
@@ -86,10 +88,18 @@ function nextStimulus(event) {
         let slider = document.getElementById("similarityJudgement");
         data["similarity_judgements"].push(slider.value);
         data["judgement_time"].push(getTimeStamp(0));
+        slider.value = "51";
+        trialNum++;
         clearCanvas();
-        displayCues(1, 0);
+
+        if (trialNum < nTrials) {
+            displayCues(trials[trialNum]);
+        } else {
+            changePage("page_main", "page_end");
+        }
         event.preventDefault();
     }
+    // TODO disable other keypresses
 }
 
 function exit(page) {
@@ -110,10 +120,9 @@ function initImage(src) {
     let img = new Image();
     img.src = src;
     return img
-    //
 }
 
-function displayCues(i, j) {
+function displayCues([i, j]) {
     document.getElementById("left_stim").appendChild(cueImages[i]);
     document.getElementById("right_stim").appendChild(cueImages[j]);
 }
@@ -128,7 +137,6 @@ function clearCanvas() {
     }
 }
 
-
 let cueFiles = [];
 for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
 let cueImages = cueFiles.map(f => initImage(f));
@@ -136,6 +144,7 @@ let cueImages = cueFiles.map(f => initImage(f));
 
 // Data
 var data = {
+    "subject_id": subject_id,
     "start_time": timestamp,
     "survey_time": "",
     "end_time": "",
@@ -147,8 +156,32 @@ var data = {
     "opencomments": ""
 }
 
+function permute(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex != 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+    return array
+}
+
+function allUniqueCombs(n) {
+    let combs = [];
+    for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+            combs.push([i, j]);
+        }
+    }
+    return combs
+}
+
+let trials = permute(allUniqueCombs(cueFiles.length));
+// TODO test each combination twice (once normal, once mirrored)
+const nTrials = trials.length;
 
 
 // Testing
-displayCues(0, 1);
-// console.log(getTimeStamp());
+// console.log(nTrials);
+
