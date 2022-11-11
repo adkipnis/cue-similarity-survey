@@ -1,17 +1,17 @@
 // Author: Alex Kipnis
 
 let jsPsych = initJsPsych();
-let timeLine = [];
 const timestamp = getTimeStamp();
+console.log(timestamp);
 let subject_id = jsPsych.randomization.randomID(8);
-let fs = false;
+let fs = true;
 
 // Helpers
 function twoPad(n) {
     return String(n).padStart(2, '0');
 }
 
-function getTimeStamp() {
+function getTimeStamp(type = 1) {
     let date = new Date();
     let year = date.getFullYear();
     let month = date.getMonth();
@@ -19,15 +19,24 @@ function getTimeStamp() {
     let hour = date.getHours();
     let minute = date.getMinutes();
     let second = date.getSeconds();
-
-    return [year, twoPad(month), twoPad(day), twoPad(hour), twoPad(minute), twoPad(second)].join('-');
+    let ms = date.getMilliseconds();
+    let T = [month, day, hour, minute, second].map(t => twoPad(t));
+    if (type == 0) {
+        T.push(ms);
+        return T.slice(2).join('-');
+    }
+    return [year, ...T].join('-');
 }
 
 // Page navigation
-function changePage(hide, show) {
+function changePage(hide, show, fullScreen = false) {
     document.getElementById(hide).style.display = "none";
     document.getElementById(show).style.display = "block";
     window.scrollTo(0, 0);
+    if (fullScreen) {
+        let elem = document.body;
+        openFullscreen(elem);
+    }
 }
 
 function openFullscreen(elem, testing = false) {
@@ -51,30 +60,22 @@ function closeFullscreen() {
     }
 }
 
-function pageStep(from, to) {
-    changePage(from, to);
-    if (fs) {
-        let elem = document.body;
-        openFullscreen(elem);
-    }
-}
 
 function loadConsent() {
-    pageStep("page_welcome", "page_consent");
+    changePage("page_welcome", "page_consent");
 }
 
 function loadDataProtection() {
-    pageStep("page_consent", "page_dataprotection");
+    changePage("page_consent", "page_dataprotection");
 }
 
 function loadFS() {
-    pageStep("page_dataprotection", "page_fs");
+    changePage("page_dataprotection", "page_fs");
 }
 
 function loadMain() {
-    changePage("page_fs", "page_main");
-    let elem = document.body;
-    openFullscreen(elem);
+    changePage("page_fs", "page_main", fullScreen = fs);
+    data["survey_time"] = getTimeStamp();
     window.addEventListener("keydown", event => {
         nextStimulus(event);
     })
@@ -82,7 +83,10 @@ function loadMain() {
 
 function nextStimulus(event) {
     if (event.key == "Space" || " ") {
-        console.log("SB pressed")
+        let slider = document.getElementById("similarityJudgement");
+        data["similarity_judgements"].push(slider.value);
+        data["judgement_time"].push(getTimeStamp(0));
+        console.log(data);
         event.preventDefault();
     }
 }
@@ -112,6 +116,18 @@ let cueFiles = [];
 for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
 
 
+// Data
+var data = {
+    "start_time": timestamp,
+    "survey_time": "",
+    "end_time": "",
+    "similarity_judgements": [],
+    "judgement_time": [],
+    "gender": "",
+    "age": "",
+    "nationality": "",
+    "opencomments": ""
+}
 
 
 

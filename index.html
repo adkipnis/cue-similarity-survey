@@ -27,7 +27,7 @@
 <body id="body">
 
     <!-- Welcome -->
-    <div id="page_welcome" class="center-pre" id="welcome" style="display:block;">
+    <div id="page_welcome" class="center-pre" id="welcome" style="display:none;">
         <center>
             <h1>Welcome!</h1>
             <h3>
@@ -182,7 +182,7 @@
     </div>
 
     <!-- Full Screen -->
-    <div id="page_fs" class="center-pre" style="display:none;">
+    <div id="page_fs" class="center-pre" style="display:block;">
         <center>
             <h3>
                 Awesome, thanks for agreeing to participate!<br>The experiment will enter full screen mode once you
@@ -202,7 +202,7 @@
         <div class="flexbox" style=" height: 0px;">
             <label>0%</label>
             <div class="slidecontainer">
-                <input type="range" min="1" max="100" value="51.2" step="any" class="slider" id="similarityJudgement">
+                <input type="range" min="1" max="100" value="51.2" step="0.1" class="slider" id="similarityJudgement">
             </div>
             <label>100%</label>
         </div>
