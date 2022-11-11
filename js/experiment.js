@@ -75,6 +75,16 @@ function loadMain() {
     changePage("page_fs", "page_main");
     let elem = document.body;
     openFullscreen(elem);
+    window.addEventListener("keydown", event => {
+        nextStimulus(event);
+    })
+}
+
+function nextStimulus(event) {
+    if (event.key == "Space" || " ") {
+        console.log("SB pressed")
+        event.preventDefault();
+    }
 }
 
 function exit(page) {
@@ -98,12 +108,14 @@ function initImage(src, id, visibility = "") {
     document.getElementById(id).appendChild(img);
 }
 
-
 let cueFiles = [];
 for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
 
 
 
+
+
+// Testing
 initImage(cueFiles[0], "left_stim")
 initImage(cueFiles[1], "right_stim")
-    // console.log(getTimeStamp());
+// console.log(getTimeStamp());
