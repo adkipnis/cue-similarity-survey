@@ -1,4 +1,5 @@
 // Author: Alex Kipnis
+let studyID = "cue-sim";
 let fs = true;
 let sliderMoved = false;
 let trialNum = 0;
@@ -60,6 +61,25 @@ function allUniqueCombs(n) {
     let a = Array.from(Array(n).keys());
     let cp = cartesianProduct(a, a);
     return cp.filter(e => e[0] != e[1]);
+}
+
+
+function saveData(body, dictionary) {
+    let filename = '../data/' + body + '.txt';
+    $.post("write_data.php", {
+        postresult: JSON.stringify(dictionary),
+        postfile: filename
+    });
+    return true;
+}
+
+
+function saveDataWrapper() {
+    let body = studyID + "_data__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time="];
+    saveData(body, JSON.stringify(data));
+
+    body = studyID + "_metadata__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time="];
+    saveData(body, JSON.stringify(metadata));
 }
 
 
@@ -189,6 +209,13 @@ function loadMain() {
 }
 
 
+function loadEnd() {
+    metadata["end_time"] = getTimeStamp(0);
+    changePage("page_main", "page_end");
+    saveDataWrapper();
+}
+
+
 function moveProgressBar(goal_width = 100) {
     let bar = document.getElementById("progress");
     let width = parseInt(bar.style.width);
@@ -239,7 +266,7 @@ function nextStimulus(event) {
         wait("page_main", duration = 500);
         displayCues(data["trials"][trialNum]);
     } else {
-        changePage("page_main", "page_end");
+        loadEnd();
     }
     moveProgressBar(sliderIntervals[trialNum]);
     event.preventDefault();
@@ -256,9 +283,10 @@ function exit(page) {
     //     clearInterval(timeoutinterval);
     // }
     // else
-    metadata["end_time"] = getTimeStamp(0);
     changePage(page, "page_exit");
 }
+
+
 
 
 
