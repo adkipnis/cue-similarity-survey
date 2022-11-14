@@ -79,27 +79,24 @@ function loadMain() {
     data["survey_time"] = getTimeStamp();
     displayCues(trials[trialNum]);
     window.addEventListener("keydown", event => {
-        nextStimulus(event);
+        if (event.key == " " || event.key == "SpaceBar") nextStimulus(event);
     })
 }
 
 function nextStimulus(event) {
-    if (event.key == "Space" || " ") {
-        let slider = document.getElementById("similarityJudgement");
-        data["similarity_judgements"].push(slider.value);
-        data["judgement_time"].push(getTimeStamp(0));
-        slider.value = "51";
-        trialNum++;
-        clearCanvas();
+    let slider = document.getElementById("similarityJudgement");
+    data["similarity_judgements"].push(slider.value);
+    data["judgement_time"].push(getTimeStamp(0));
+    slider.value = "51";
+    trialNum++;
+    clearCanvas();
 
-        if (trialNum < nTrials) {
-            displayCues(trials[trialNum]);
-        } else {
-            changePage("page_main", "page_end");
-        }
-        event.preventDefault();
+    if (trialNum < nTrials) {
+        displayCues(trials[trialNum]);
+    } else {
+        changePage("page_main", "page_end");
     }
-    // TODO disable other keypresses
+    event.preventDefault();
 }
 
 function exit(page) {
