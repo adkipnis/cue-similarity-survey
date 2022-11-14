@@ -1,17 +1,26 @@
 // Author: Alex Kipnis
-
-let jsPsych = initJsPsych();
 const timestamp = getTimeStamp();
-let subject_id = jsPsych.randomization.randomID(8);
+let subject_id = randomID(8);
 let fs = true;
 let sliderMoved = false;
 let trialNum = 0;
 
 
 // Helpers
+function randomID(length = 32) {
+    let result = "";
+    const chars = "0123456789abcdefghjklmnopqrstuvwxyz";
+    for (let i = 0; i < length; i++) {
+        result += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return result;
+}
+
+
 function twoPad(n) {
     return String(n).padStart(2, '0');
 }
+
 
 function getTimeStamp(type = 1) {
     let date = new Date();
@@ -32,7 +41,6 @@ function getTimeStamp(type = 1) {
 
 
 // Page navigation
-
 async function changePage(hide, show, fullScreen = false, timeout = 0) {
     document.getElementById(hide).style.display = "none";
     await new Promise(resolve => setTimeout(resolve, timeout));
@@ -44,9 +52,11 @@ async function changePage(hide, show, fullScreen = false, timeout = 0) {
     }
 }
 
+
 function wait(id, duration = 500) {
     changePage(id, id, fullScreen = false, timeout = duration);
 }
+
 
 function openFullscreen(elem, testing = false) {
     if (testing) return
@@ -59,6 +69,7 @@ function openFullscreen(elem, testing = false) {
     }
 }
 
+
 function closeFullscreen() {
     if (document.exitFullscreen) {
         document.exitFullscreen();
@@ -69,17 +80,21 @@ function closeFullscreen() {
     }
 }
 
+
 function loadConsent() {
     changePage("page_welcome", "page_consent");
 }
+
 
 function loadDataProtection() {
     changePage("page_consent", "page_dataprotection");
 }
 
+
 function loadFS() {
     changePage("page_dataprotection", "page_fs");
 }
+
 
 function loadMain() {
     changePage("page_fs", "page_main", fullScreen = fs);
@@ -95,6 +110,7 @@ function loadMain() {
     });
 }
 
+
 function moveSlider(event, by = 5) {
     let slider = document.getElementById("similarityJudgement");
     if (event.key == "ArrowLeft") {
@@ -106,6 +122,7 @@ function moveSlider(event, by = 5) {
     sliderMoved = true;
 }
 
+
 async function instruct2moveSlider() {
     let stopper = document.getElementById("stopper");
     stopper.style.display = "";
@@ -115,6 +132,7 @@ async function instruct2moveSlider() {
     stopper.style.display = "None";
     stopper.style.opacity = "1";
 }
+
 
 function nextStimulus(event) {
     let slider = document.getElementById("similarityJudgement");
@@ -133,6 +151,7 @@ function nextStimulus(event) {
     event.preventDefault();
     sliderMoved = false;
 }
+
 
 function exit(page) {
     if (document.fullscreenElement != null) closeFullscreen();
@@ -155,10 +174,12 @@ function initImage(src) {
     return img
 }
 
+
 function displayCues([i, j]) {
     document.getElementById("left_stim").appendChild(cueImages[i]);
     document.getElementById("right_stim").appendChild(cueImages[j]);
 }
+
 
 function clearCanvas() {
     const ids = ["left_stim", "right_stim"];
@@ -169,6 +190,7 @@ function clearCanvas() {
         }
     }
 }
+
 
 let cueFiles = [];
 for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
@@ -187,11 +209,13 @@ let metadata = {
     "opencomments": "" // TODO
 }
 
+
 let data = {
     "trials": "",
     "similarity_judgements": [],
     "judgement_times": [],
 }
+
 
 function permute(array) {
     let currentIndex = array.length, randomIndex;
@@ -204,11 +228,13 @@ function permute(array) {
     return array
 }
 
+
 function cartesianProduct(a, b) {
     let start = [];
     const combine = (prev, x) => [...prev, ...b.map(y => [x, y])]
     return a.reduce(combine, start)
 }
+
 
 function allUniqueCombs(n) {
     let a = Array.from(Array(n).keys());
@@ -216,9 +242,6 @@ function allUniqueCombs(n) {
     return cp.filter(e => e[0] != e[1]);
 }
 
+
 data["trials"] = permute(allUniqueCombs(cueFiles.length));
 const nTrials = data["trials"].length;
-
-// Testing
-// console.log(nTrials);
-
