@@ -1,12 +1,9 @@
 // Author: Alex Kipnis
-const timestamp = getTimeStamp();
-let subject_id = randomID(8);
 let fs = true;
 let sliderMoved = false;
 let trialNum = 0;
 
-
-// Helpers
+// Data
 function randomID(length = 32) {
     let result = "";
     const chars = "0123456789abcdefghjklmnopqrstuvwxyz";
@@ -38,6 +35,55 @@ function getTimeStamp(type = 1) {
     }
     return [year, ...T].join('-');
 }
+
+
+function permute(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex != 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+    return array
+}
+
+
+function cartesianProduct(a, b) {
+    let start = [];
+    const combine = (prev, x) => [...prev, ...b.map(y => [x, y])]
+    return a.reduce(combine, start)
+}
+
+
+function allUniqueCombs(n) {
+    let a = Array.from(Array(n).keys());
+    let cp = cartesianProduct(a, a);
+    return cp.filter(e => e[0] != e[1]);
+}
+
+
+let metadata = {
+    "subject_id": randomID(8),
+    "start_time": getTimeStamp(),
+    "survey_time": "",
+    "end_time": "",
+    "gender": "", // TODO
+    "age": "", // TODO
+    "nationality": "", // TODO
+    "opencomments": "" // TODO
+}
+
+
+let data = {
+    "trials": "",
+    "similarity_judgements": [],
+    "judgement_times": [],
+}
+
+
+data["trials"] = permute(allUniqueCombs(cueFiles.length));
+const nTrials = data["trials"].length;
 
 
 // Page navigation
@@ -195,53 +241,3 @@ function clearCanvas() {
 let cueFiles = [];
 for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
 let cueImages = cueFiles.map(f => initImage(f));
-
-
-// Data
-let metadata = {
-    "subject_id": subject_id,
-    "start_time": timestamp,
-    "survey_time": "",
-    "end_time": "",
-    "gender": "", // TODO
-    "age": "", // TODO
-    "nationality": "", // TODO
-    "opencomments": "" // TODO
-}
-
-
-let data = {
-    "trials": "",
-    "similarity_judgements": [],
-    "judgement_times": [],
-}
-
-
-function permute(array) {
-    let currentIndex = array.length, randomIndex;
-    while (currentIndex != 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-    }
-    return array
-}
-
-
-function cartesianProduct(a, b) {
-    let start = [];
-    const combine = (prev, x) => [...prev, ...b.map(y => [x, y])]
-    return a.reduce(combine, start)
-}
-
-
-function allUniqueCombs(n) {
-    let a = Array.from(Array(n).keys());
-    let cp = cartesianProduct(a, a);
-    return cp.filter(e => e[0] != e[1]);
-}
-
-
-data["trials"] = permute(allUniqueCombs(cueFiles.length));
-const nTrials = data["trials"].length;
