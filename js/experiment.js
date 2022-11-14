@@ -167,20 +167,20 @@ function permute(array) {
     return array
 }
 
+function cartesianProduct(a, b) {
+    let start = [];
+    const combine = (prev, x) => [...prev, ...b.map(y => [x, y])]
+    return a.reduce(combine, start)
+}
+
 function allUniqueCombs(n) {
-    let combs = [];
-    for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-            combs.push([i, j]);
-        }
-    }
-    return combs
+    let a = Array.from(Array(n).keys());
+    let cp = cartesianProduct(a, a);
+    return cp.filter(e => e[0] != e[1]);
 }
 
 let trials = permute(allUniqueCombs(cueFiles.length));
-// TODO test each combination twice (once normal, once mirrored)
 const nTrials = trials.length;
-
 
 // Testing
 // console.log(nTrials);
