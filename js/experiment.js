@@ -65,7 +65,7 @@ function allUniqueCombs(n) {
 
 
 function saveData(body, dictionary) {
-    let filename = '../data/' + body + '.txt';
+    let filename = './data/' + body + '.txt';
     $.post("write_data.php", {
         postresult: JSON.stringify(dictionary),
         postfile: filename
@@ -75,10 +75,10 @@ function saveData(body, dictionary) {
 
 
 function saveDataWrapper() {
-    let body = studyID + "_data__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time="];
+    let body = studyID + "_data__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
     saveData(body, JSON.stringify(data));
 
-    body = studyID + "_metadata__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time="];
+    body = studyID + "_metadata__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
     saveData(body, JSON.stringify(metadata));
 }
 
