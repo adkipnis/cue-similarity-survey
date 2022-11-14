@@ -85,9 +85,20 @@ function loadMain() {
     metadata["survey_time"] = getTimeStamp(0);
     displayCues(data["trials"][trialNum]);
     window.addEventListener("keydown", event => {
-        if (event.key == " " || event.key == "SpaceBar") nextStimulus(event);
         if (event.key == "ArrowLeft" || event.key == "ArrowRight") moveSlider(event);
-    })
+        if (event.key == "ArrowUp" || event.key == "ArrowDown") event.preventDefault();
+        if (event.key == " " || event.key == "SpaceBar") nextStimulus(event);
+    });
+}
+
+function moveSlider(event, by = 5) {
+    let slider = document.getElementById("similarityJudgement");
+    if (event.key == "ArrowLeft") {
+        slider.value = Math.max(0, parseInt(slider.value) - by);
+    } else {
+        slider.value = Math.min(100, parseInt(slider.value) + by);
+    }
+    event.preventDefault();
 }
 
 function nextStimulus(event) {
@@ -103,16 +114,6 @@ function nextStimulus(event) {
         displayCues(data["trials"][trialNum]);
     } else {
         changePage("page_main", "page_end");
-    }
-    event.preventDefault();
-}
-
-function moveSlider(event, by = 5) {
-    let slider = document.getElementById("similarityJudgement");
-    if (event.key == "ArrowLeft") {
-        slider.value = Math.max(0, parseInt(slider.value) - by);
-    } else {
-        slider.value = Math.min(100, parseInt(slider.value) + by);
     }
     event.preventDefault();
 }
