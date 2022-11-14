@@ -4,6 +4,7 @@ let jsPsych = initJsPsych();
 const timestamp = getTimeStamp();
 let subject_id = jsPsych.randomization.randomID(8);
 let fs = true;
+let sliderMoved = false;
 let trialNum = 0;
 
 
@@ -87,7 +88,10 @@ function loadMain() {
     window.addEventListener("keydown", event => {
         if (event.key == "ArrowLeft" || event.key == "ArrowRight") moveSlider(event);
         if (event.key == "ArrowUp" || event.key == "ArrowDown") event.preventDefault();
-        if (event.key == " " || event.key == "SpaceBar") nextStimulus(event);
+        if (event.key == " " || event.key == "SpaceBar") {
+            if (sliderMoved) nextStimulus(event);
+            else instruct2moveSlider();
+        }
     });
 }
 
@@ -99,6 +103,17 @@ function moveSlider(event, by = 5) {
         slider.value = Math.min(100, parseInt(slider.value) + by);
     }
     event.preventDefault();
+    sliderMoved = true;
+}
+
+async function instruct2moveSlider(waitDuration = 1500) {
+    let stopper = document.getElementById("stopper");
+    stopper.style.display = "";
+    await new Promise(resolve => setTimeout(resolve, waitDuration));
+    stopper.style.opacity = "0";
+    await new Promise(resolve => setTimeout(resolve, waitDuration));
+    stopper.style.display = "None";
+    stopper.style.opacity = "1";
 }
 
 function nextStimulus(event) {
@@ -116,6 +131,7 @@ function nextStimulus(event) {
         changePage("page_main", "page_end");
     }
     event.preventDefault();
+    sliderMoved = false;
 }
 
 function exit(page) {

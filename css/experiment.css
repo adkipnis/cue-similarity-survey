@@ -229,11 +229,16 @@ label {
     transition: opacity .2s;
 }
 
-
 #explanation {
     height: 1 px;
     margin: 5px;
     text-align: center;
+}
+
+#stopper {
+
+    height: 100px;
+    transition: opacity 1s;
 }
 
 /* visual aids */
