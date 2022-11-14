@@ -82,7 +82,7 @@ function loadFS() {
 
 function loadMain() {
     changePage("page_fs", "page_main", fullScreen = fs);
-    data["survey_time"] = getTimeStamp();
+    metadata["survey_time"] = getTimeStamp(0);
     displayCues(data["trials"][trialNum]);
     window.addEventListener("keydown", event => {
         if (event.key == " " || event.key == "SpaceBar") nextStimulus(event);
@@ -93,7 +93,7 @@ function loadMain() {
 function nextStimulus(event) {
     let slider = document.getElementById("similarityJudgement");
     data["similarity_judgements"].push(slider.value);
-    data["judgement_time"].push(getTimeStamp(0));
+    data["judgement_times"].push(getTimeStamp(0));
     slider.value = "51";
     trialNum++;
     clearCanvas();
@@ -126,6 +126,7 @@ function exit(page) {
     //     clearInterval(timeoutinterval);
     // }
     // else
+    metadata["end_time"] = getTimeStamp(0);
     changePage(page, "page_exit");
 }
 
@@ -161,17 +162,18 @@ let cueImages = cueFiles.map(f => initImage(f));
 let metadata = {
     "subject_id": subject_id,
     "start_time": timestamp,
-    "survey_time": "", // TODO
-    "end_time": "", // TODO
+    "survey_time": "",
+    "end_time": "",
     "gender": "", // TODO
     "age": "", // TODO
     "nationality": "", // TODO
     "opencomments": "" // TODO
 }
+
 let data = {
     "trials": "",
     "similarity_judgements": [],
-    "judgement_time": [],
+    "judgement_times": [],
 }
 
 function permute(array) {
