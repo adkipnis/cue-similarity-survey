@@ -82,8 +82,38 @@ let data = {
 }
 
 
+let cueFiles = [];
+for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
 data["trials"] = permute(allUniqueCombs(cueFiles.length));
 const nTrials = data["trials"].length;
+
+
+// Stimuli
+function initImage(src) {
+    let img = new Image();
+    img.src = src;
+    return img
+}
+
+
+function displayCues([i, j]) {
+    document.getElementById("left_stim").appendChild(cueImages[i]);
+    document.getElementById("right_stim").appendChild(cueImages[j]);
+}
+
+
+function clearCanvas() {
+    const ids = ["left_stim", "right_stim"];
+    for (let id of ids) {
+        const myNode = document.getElementById(id);
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.lastChild);
+        }
+    }
+}
+
+
+let cueImages = cueFiles.map(f => initImage(f));
 
 
 // Page navigation
@@ -213,31 +243,4 @@ function exit(page) {
 }
 
 
-// Stimuli
-function initImage(src) {
-    let img = new Image();
-    img.src = src;
-    return img
-}
 
-
-function displayCues([i, j]) {
-    document.getElementById("left_stim").appendChild(cueImages[i]);
-    document.getElementById("right_stim").appendChild(cueImages[j]);
-}
-
-
-function clearCanvas() {
-    const ids = ["left_stim", "right_stim"];
-    for (let id of ids) {
-        const myNode = document.getElementById(id);
-        while (myNode.firstChild) {
-            myNode.removeChild(myNode.lastChild);
-        }
-    }
-}
-
-
-let cueFiles = [];
-for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
-let cueImages = cueFiles.map(f => initImage(f));
