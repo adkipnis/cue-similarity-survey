@@ -106,12 +106,12 @@ function moveSlider(event, by = 5) {
     sliderMoved = true;
 }
 
-async function instruct2moveSlider(waitDuration = 1500) {
+async function instruct2moveSlider() {
     let stopper = document.getElementById("stopper");
     stopper.style.display = "";
-    await new Promise(resolve => setTimeout(resolve, waitDuration));
+    await new Promise(resolve => setTimeout(resolve, 1500));
     stopper.style.opacity = "0";
-    await new Promise(resolve => setTimeout(resolve, waitDuration));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     stopper.style.display = "None";
     stopper.style.opacity = "1";
 }
