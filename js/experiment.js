@@ -83,7 +83,7 @@ function loadFS() {
 function loadMain() {
     changePage("page_fs", "page_main", fullScreen = fs);
     data["survey_time"] = getTimeStamp();
-    displayCues(trials[trialNum]);
+    displayCues(data["trials"][trialNum]);
     window.addEventListener("keydown", event => {
         if (event.key == " " || event.key == "SpaceBar") nextStimulus(event);
         if (event.key == "ArrowLeft" || event.key == "ArrowRight") moveSlider(event);
@@ -100,7 +100,7 @@ function nextStimulus(event) {
 
     if (trialNum < nTrials) {
         wait("page_main", duration = 500);
-        displayCues(trials[trialNum]);
+        displayCues(data["trials"][trialNum]);
     } else {
         changePage("page_main", "page_end");
     }
@@ -158,17 +158,20 @@ let cueImages = cueFiles.map(f => initImage(f));
 
 
 // Data
-var data = {
+let metadata = {
     "subject_id": subject_id,
     "start_time": timestamp,
-    "survey_time": "",
-    "end_time": "",
+    "survey_time": "", // TODO
+    "end_time": "", // TODO
+    "gender": "", // TODO
+    "age": "", // TODO
+    "nationality": "", // TODO
+    "opencomments": "" // TODO
+}
+let data = {
+    "trials": "",
     "similarity_judgements": [],
     "judgement_time": [],
-    "gender": "",
-    "age": "",
-    "nationality": "",
-    "opencomments": ""
 }
 
 function permute(array) {
@@ -194,8 +197,8 @@ function allUniqueCombs(n) {
     return cp.filter(e => e[0] != e[1]);
 }
 
-let trials = permute(allUniqueCombs(cueFiles.length));
-const nTrials = trials.length;
+data["trials"] = permute(allUniqueCombs(cueFiles.length));
+const nTrials = data["trials"].length;
 
 // Testing
 // console.log(nTrials);
