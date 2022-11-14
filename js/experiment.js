@@ -86,7 +86,8 @@ let cueFiles = [];
 for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
 data["trials"] = permute(allUniqueCombs(cueFiles.length));
 const nTrials = data["trials"].length;
-
+let sliderIntervals = [];
+for (let i = 0; i < nTrials; i++) sliderIntervals.push(i / nTrials * 100);
 
 // Stimuli
 function initImage(src) {
@@ -187,6 +188,21 @@ function loadMain() {
 }
 
 
+function moveProgressBar(goal_width = 100) {
+    let bar = document.getElementById("progress");
+    let width = parseInt(bar.style.width);
+    let id = setInterval(frame, 10);
+    function frame() {
+        if (width >= goal_width) {
+            clearInterval(id);
+        } else {
+            width++;
+            bar.style.width = width + '%';
+        }
+    }
+}
+
+
 function moveSlider(event, by = 5) {
     let slider = document.getElementById("similarityJudgement");
     if (event.key == "ArrowLeft") {
@@ -224,6 +240,7 @@ function nextStimulus(event) {
     } else {
         changePage("page_main", "page_end");
     }
+    moveProgressBar(sliderIntervals[trialNum]);
     event.preventDefault();
     sliderMoved = false;
 }

@@ -182,7 +182,7 @@
     </div>
 
     <!-- Full Screen -->
-    <div id="page_fs" class="center-pre" style="display:none;">
+    <div id="page_fs" class="center-pre" style="display:block;">
         <center>
             <h3>
                 Awesome, thanks for agreeing to participate!<br>The experiment will enter full screen mode once you
@@ -192,11 +192,11 @@
     </div>
 
     <!-- Main Page -->
-    <div class="progress-bar" style="display:block;">
-        <span class="progress-bar-fill" style="width: 70%;"></span>
-    </div>
 
-    <div id="page_main" class="center-peri" style="display:block;">
+    <div class="progress-bar" style="display:block;">
+        <span class="progress-bar-fill" id="progress" style="width: 0%;"></span>
+    </div>
+    <div id="page_main" class="center-peri" style="display:none;">
         <div class="flexbox">
             <div class="canvas-item" id="left_stim"></div>
             <div class="canvas-item" id="right_stim"></div>

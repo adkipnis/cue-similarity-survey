@@ -115,7 +115,7 @@ label {
 
 .progress-bar-fill {
     display: block;
-    height: 3px;
+    height: 5px;
     background-color: var(--apple-green);
     border-radius: 3px;
 
