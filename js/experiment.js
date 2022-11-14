@@ -31,14 +31,20 @@ function getTimeStamp(type = 1) {
 
 
 // Page navigation
-function changePage(hide, show, fullScreen = false) {
+
+async function changePage(hide, show, fullScreen = false, timeout = 0) {
     document.getElementById(hide).style.display = "none";
+    await new Promise(resolve => setTimeout(resolve, timeout));
     document.getElementById(show).style.display = "block";
     window.scrollTo(0, 0);
     if (fullScreen) {
         let elem = document.body;
         openFullscreen(elem);
     }
+}
+
+function wait(id, duration = 500) {
+    changePage(id, id, fullScreen = false, timeout = duration);
 }
 
 function openFullscreen(elem, testing = false) {
@@ -93,6 +99,7 @@ function nextStimulus(event) {
     clearCanvas();
 
     if (trialNum < nTrials) {
+        wait("page_main", duration = 500);
         displayCues(trials[trialNum]);
     } else {
         changePage("page_main", "page_end");
