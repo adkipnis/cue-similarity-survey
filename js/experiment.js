@@ -176,6 +176,7 @@ function loadFS() {
 function loadMain() {
     changePage("page_fs", "page_main", fullScreen = fs);
     metadata["survey_time"] = getTimeStamp(0);
+    document.getElementById("progress_outer").style.display = "block";
     displayCues(data["trials"][trialNum]);
     window.addEventListener("keydown", event => {
         if (event.key == "ArrowLeft" || event.key == "ArrowRight") moveSlider(event);
