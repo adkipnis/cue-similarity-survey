@@ -1,6 +1,7 @@
 // Author: Alex Kipnis
-let studyID = "cue-sim";
-let fs = true;
+const studyID = "cue-sim";
+const fs = true;
+const nCues = 10;
 let sliderMoved = false;
 let trialNum = 0;
 
@@ -106,11 +107,11 @@ let data = {
 
 
 let cueFiles = [];
-for (let i = 1; i < 6; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
+for (let i = 0; i < nCues; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
 data["trials"] = permute(allUniqueCombs(cueFiles.length));
 const nTrials = data["trials"].length;
 let sliderIntervals = [];
-for (let i = 0; i < nTrials; i++) sliderIntervals.push(i / nTrials * 100);
+for (let i = 0; i < nTrials; i++) sliderIntervals.push(i / (nTrials + 3) * 100);
 
 // Stimuli
 function initImage(src) {
@@ -247,6 +248,7 @@ function loadEnd() {
             buttons: ["OK", false]
         });
     } else {
+        moveProgressBar(100);
         metadata["gender"] = checkq1.value;
         metadata["age"] = checkq2;
         metadata["nationality"] = checkq3;
