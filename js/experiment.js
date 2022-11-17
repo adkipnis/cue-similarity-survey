@@ -2,6 +2,7 @@
 const studyID = "cue-sim";
 const fs = true;
 const nCues = 10;
+let allowKeypress = true;
 let sliderMoved = false;
 let trialNum = 0;
 
@@ -113,6 +114,7 @@ const nTrials = data["trials"].length;
 let sliderIntervals = [];
 for (let i = 0; i < nTrials; i++) sliderIntervals.push(i / (nTrials + 3) * 100);
 
+
 // Stimuli
 function initImage(src) {
     let img = new Image();
@@ -143,6 +145,7 @@ let cueImages = cueFiles.map(f => initImage(f));
 
 // Page navigation
 async function changePage(hide, show, fullScreen = false, timeout = 0) {
+    allowKeypress = false;
     document.getElementById(hide).style.display = "none";
     await new Promise(resolve => setTimeout(resolve, timeout));
     document.getElementById(show).style.display = "block";
@@ -151,6 +154,7 @@ async function changePage(hide, show, fullScreen = false, timeout = 0) {
         let elem = document.body;
         openFullscreen(elem);
     }
+    allowKeypress = true;
 }
 
 
@@ -206,11 +210,13 @@ function loadMain() {
     document.getElementById("progress_outer").style.display = "block";
     displayCues(data["trials"][trialNum]);
     window.addEventListener("keydown", event => {
-        if (event.key == "ArrowLeft" || event.key == "ArrowRight") moveSlider(event);
-        if (event.key == "ArrowUp" || event.key == "ArrowDown") event.preventDefault();
-        if (event.key == " " || event.key == "SpaceBar") {
-            if (sliderMoved) nextStimulus(event);
-            else instruct2moveSlider();
+        if (allowKeypress) {
+            if (event.key == "ArrowLeft" || event.key == "ArrowRight") moveSlider(event);
+            if (event.key == "ArrowUp" || event.key == "ArrowDown") event.preventDefault();
+            if (event.key == " " || event.key == "SpaceBar") {
+                if (sliderMoved) nextStimulus(event);
+                else instruct2moveSlider();
+            }
         }
     });
 }
@@ -307,9 +313,10 @@ function nextStimulus(event) {
     clearCanvas();
 
     if (trialNum < nTrials) {
-        wait("page_main", duration = 500);
+        wait("page_main", duration = 750);
         displayCues(data["trials"][trialNum]);
     } else {
+        wait("page_main", duration = 1000);
         saveDataWrapper(1);
         changePage("page_main", "page_questionsintro");
     }
