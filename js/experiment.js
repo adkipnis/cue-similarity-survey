@@ -217,6 +217,7 @@ function loadMain() {
 function loadEnd() {
     let checkq1 = document.querySelector('input[name="q1"]:checked');
     let checkq2 = document.getElementById('age').value;
+    let checkq2R = new RegExp(document.getElementById('age').pattern);
     let checkq3 = document.getElementById('nationality').value;
 
     if (checkq1 == null || checkq2 == "" || checkq3 == "") {
@@ -226,7 +227,13 @@ function loadEnd() {
             buttons: ["OK", false]
         });
     }
-    // swal("Some questions have missing responses!");
+    else if (!checkq2R.test(checkq2)) {
+        swal({
+            text: "Your age is in the wrong format!",
+            icon: "warning",
+            buttons: ["OK", false]
+        });
+    }
     else {
         metadata["gender"] = checkq1.value;
         metadata["age"] = checkq2;
@@ -309,6 +316,7 @@ function exit(page) {
     changePage(page, "page_exit");
 }
 
+// Testing
 
 
 
