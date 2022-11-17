@@ -94,7 +94,7 @@ let metadata = {
     "gender": "",
     "age": "",
     "nationality": "",
-    "opencomments": ""
+    "comments": ""
 }
 
 
@@ -250,6 +250,7 @@ function loadEnd() {
         metadata["gender"] = checkq1.value;
         metadata["age"] = checkq2;
         metadata["nationality"] = checkq3;
+        metadata["comments"] = document.getElementById('comments').value;
         metadata["end_time"] = getTimeStamp(0);
         changePage("page_questions", "page_end");
         saveDataWrapper(2);
