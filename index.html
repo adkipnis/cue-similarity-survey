@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Alex Kipnis">
     <script src="js/jquery.min.js"></script>
+    <script src="js/sweetalert.min.js"></script>
 
 
     <!-- Style -->
@@ -29,7 +30,7 @@
 
 
     <!-- Welcome -->
-    <div id="page_welcome" class="center-pre" id="welcome" style="display:block;">
+    <div id="page_welcome" class="center-pre" id="welcome" style="display:none;">
         <center>
             <h1>Welcome!</h1>
             <h3>
@@ -222,6 +223,38 @@
             data-html="true"> ? </div>
         <!-- <div class="axis main-axis"></div> -->
         <!-- <div class="axis cross-axis"></div> -->
+    </div>
+
+    <!-- Metadata -->
+    <div id="page_questionsintro" class="center-pre" style="display:none;">
+        <center>
+            <h1>Final Questions</h1>
+            <h3 style="width:35%">Thank you for completing the task. In the following section,
+                please answer some questions about yourself
+                and your experience with the task.
+                This helps our research.</h3>
+            <br>
+            <button class="buttonG" onclick="loadQuestions()">Continue</button>
+    </div>
+
+    <div id="page_questions" class="center-pre" style="display:block">
+        <center>
+            <h4>What gender do you identify with?</h4>
+            <label><input type="radio" name="q1" value="male">&nbspfemale</label>
+            <label><input type="radio" name="q1" value="female">&nbspmale</label>
+            <label><input type="radio" name="q1" value="other">&nbspother</label>
+            <label><input type="radio" name="q1" value="nosay">&nbspprefer not to say</label>
+            <br><br><br>
+            <h4>What is your age?</h4>
+            <input type="text" id="age" name="age" size="50%" required>
+            <br><br><br>
+            <h4>What is your nationality?</h4>
+            <input type="text" id="nationality" name="nationality" size="50%" required>
+            <br><br><br>
+            <h4>Is there anything else you would like to tell us?</h4>
+            <textarea name="Text4" id="opencomments" cols="60%" rows="6"></textarea>
+            <br><br><br>
+            <button class="buttonN" onclick="loadEnd()">Finish</button>
     </div>
 
     <!-- Exit, Timeout, End -->
