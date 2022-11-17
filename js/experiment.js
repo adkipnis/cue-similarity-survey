@@ -74,12 +74,14 @@ function saveData(body, dictionary) {
 }
 
 
-function saveDataWrapper() {
-    let body = studyID + "_data__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
-    saveData(body, JSON.stringify(data));
-
-    body = studyID + "_metadata__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
-    saveData(body, JSON.stringify(metadata));
+function saveDataWrapper(type = 1) {
+    if (type == 1) {
+        let body = studyID + "_data__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
+        saveData(body, JSON.stringify(data));
+    } else if (type == 2) {
+        let body = studyID + "_metadata__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
+        saveData(body, JSON.stringify(metadata));
+    }
 }
 
 
@@ -88,10 +90,10 @@ let metadata = {
     "start_time": getTimeStamp(),
     "survey_time": "",
     "end_time": "",
-    "gender": "", // TODO
-    "age": "", // TODO
-    "nationality": "", // TODO
-    "opencomments": "" // TODO
+    "gender": "",
+    "age": "",
+    "nationality": "",
+    "opencomments": ""
 }
 
 
@@ -192,6 +194,9 @@ function loadFS() {
     changePage("page_dataprotection", "page_fs");
 }
 
+function loadQuestions() {
+    changePage("page_questionsintro", "page_questions");
+}
 
 function loadMain() {
     changePage("page_fs", "page_main", fullScreen = fs);
@@ -210,9 +215,26 @@ function loadMain() {
 
 
 function loadEnd() {
-    metadata["end_time"] = getTimeStamp(0);
-    changePage("page_main", "page_end");
-    saveDataWrapper();
+    let checkq1 = document.querySelector('input[name="q1"]:checked');
+    let checkq2 = document.getElementById('age').value;
+    let checkq3 = document.getElementById('nationality').value;
+
+    if (checkq1 == null || checkq2 == "" || checkq3 == "") {
+        swal({
+            text: "Some questions have missing responses!",
+            icon: "warning",
+            buttons: ["OK", false]
+        });
+    }
+    // swal("Some questions have missing responses!");
+    else {
+        metadata["gender"] = checkq1.value;
+        metadata["age"] = checkq2;
+        metadata["nationality"] = checkq3;
+        metadata["end_time"] = getTimeStamp(0);
+        changePage("page_questions", "page_end");
+        saveDataWrapper(2);
+    }
 }
 
 
@@ -266,7 +288,8 @@ function nextStimulus(event) {
         wait("page_main", duration = 500);
         displayCues(data["trials"][trialNum]);
     } else {
-        loadEnd();
+        saveDataWrapper(1);
+        changePage("page_main", "page_questionsintro");
     }
     moveProgressBar(sliderIntervals[trialNum]);
     event.preventDefault();
