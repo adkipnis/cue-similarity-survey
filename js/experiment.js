@@ -112,7 +112,7 @@ for (let i = 0; i < nCues; i++) cueFiles.push("cues/c_" + String.fromCharCode(i 
 data["trials"] = permute(allUniqueCombs(cueFiles.length));
 const nTrials = data["trials"].length;
 let sliderIntervals = [];
-for (let i = 0; i < nTrials; i++) sliderIntervals.push(i / (nTrials + 3) * 100);
+for (let i = 0; i < nTrials; i++) sliderIntervals.push(i / (nTrials + 2) * 100);
 
 
 // Stimuli
@@ -147,14 +147,16 @@ let cueImages = cueFiles.map(f => initImage(f));
 async function changePage(hide, show, fullScreen = false, timeout = 0) {
     allowKeypress = false;
     document.getElementById(hide).style.display = "none";
-    await new Promise(resolve => setTimeout(resolve, timeout));
-    document.getElementById(show).style.display = "block";
-    window.scrollTo(0, 0);
-    if (fullScreen) {
-        let elem = document.body;
-        openFullscreen(elem);
-    }
-    allowKeypress = true;
+    let t = new Promise(resolve => setTimeout(resolve, timeout));
+    t.then(() => {
+        document.getElementById(show).style.display = "block";
+        window.scrollTo(0, 0);
+        if (fullScreen) {
+            let elem = document.body;
+            openFullscreen(elem);
+        }
+        allowKeypress = true;
+    });
 }
 
 
@@ -305,6 +307,7 @@ async function instruct2moveSlider() {
 
 
 function nextStimulus(event) {
+    event.preventDefault();
     let slider = document.getElementById("similarityJudgement");
     data["similarity_judgements"].push(slider.value);
     data["judgement_times"].push(getTimeStamp(0));
@@ -315,14 +318,12 @@ function nextStimulus(event) {
     if (trialNum < nTrials) {
         wait("page_main", duration = 750);
         displayCues(data["trials"][trialNum]);
+        sliderMoved = false;
+        moveProgressBar(sliderIntervals[trialNum]);
     } else {
-        wait("page_main", duration = 1000);
+        changePage("page_main", "page_questionsintro", timeout = 1000);
         saveDataWrapper(1);
-        changePage("page_main", "page_questionsintro");
     }
-    moveProgressBar(sliderIntervals[trialNum]);
-    event.preventDefault();
-    sliderMoved = false;
 }
 
 
