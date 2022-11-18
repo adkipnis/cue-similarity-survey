@@ -107,7 +107,7 @@ data["stim_left"] = trials.map(t => t[0]);
 data["stim_right"] = trials.map(t => t[1]);
 const nTrials = trials.length;
 let sliderIntervals = [];
-for (let i = 0; i < nTrials; i++) sliderIntervals.push(i / (nTrials + 2) * 100);
+for (let i = 0; i <= nTrials; i++) sliderIntervals.push(i / (nTrials + 2) * 100);
 
 
 // Stimuli
@@ -139,24 +139,14 @@ let cueImages = cueFiles.map(f => initImage(f));
 
 
 // Page navigation
-async function changePage(hide, show, fullScreen = false, timeout = 0) {
-    allowKeypress = false;
+function changePage(hide, show, fullScreen = false) {
     document.getElementById(hide).style.display = "none";
-    let t = new Promise(resolve => setTimeout(resolve, timeout));
-    t.then(() => {
-        document.getElementById(show).style.display = "block";
-        window.scrollTo(0, 0);
-        if (fullScreen) {
-            let elem = document.body;
-            openFullscreen(elem);
-        }
-        allowKeypress = true;
-    });
-}
-
-
-function wait(id, duration = 500) {
-    changePage(id, id, fullScreen = false, timeout = duration);
+    document.getElementById(show).style.display = "block";
+    window.scrollTo(0, 0);
+    if (fullScreen) {
+        let elem = document.body;
+        openFullscreen(elem);
+    }
 }
 
 
@@ -303,20 +293,30 @@ async function instruct2moveSlider() {
 
 function nextStimulus(event) {
     event.preventDefault();
+    document.getElementById("page_main").style.display = "none";
     let slider = document.getElementById("similarityJudgement");
     data["similarity_judgements"].push(slider.value);
     data["judgement_times"].push(getTimeStamp());
     slider.value = "51";
     trialNum++;
     clearCanvas();
+    allowKeypress = false;
+    moveProgressBar(sliderIntervals[trialNum]);
 
     if (trialNum < nTrials) {
-        wait("page_main", duration = 750);
-        displayCues(trials[trialNum]);
-        sliderMoved = false;
-        moveProgressBar(sliderIntervals[trialNum]);
+        setTimeout(() => {
+            displayCues(trials[trialNum]);
+            document.getElementById("page_main").style.display = "block";
+            allowKeypress = true;
+            sliderMoved = false;
+        },
+            750);
     } else {
-        changePage("page_main", "page_questionsintro", timeout = 1000);
+        setTimeout(() => {
+            document.getElementById("page_questionsintro").style.display = "block";
+            sliderMoved = false;
+        },
+            1000);
     }
 }
 
