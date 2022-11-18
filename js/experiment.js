@@ -1,7 +1,7 @@
 // Author: Alex Kipnis
 const studyID = "cue-sim";
 const fs = true;
-const nCues = 10;
+const nCues = 3;
 let allowKeypress = true;
 let sliderMoved = false;
 let trialNum = 0;
@@ -101,7 +101,8 @@ let metadata = {
 
 
 let data = {
-    "trials": "",
+    "stim_left": "",
+    "stim_right": "",
     "similarity_judgements": [],
     "judgement_times": [],
 }
@@ -109,8 +110,10 @@ let data = {
 
 let cueFiles = [];
 for (let i = 0; i < nCues; i++) cueFiles.push("cues/c_" + String.fromCharCode(i + 65) + ".png");
-data["trials"] = permute(allUniqueCombs(cueFiles.length));
-const nTrials = data["trials"].length;
+trials = permute(allUniqueCombs(cueFiles.length));
+data["stim_left"] = trials.map(t => t[0]);
+data["stim_right"] = trials.map(t => t[1]);
+const nTrials = trials.length;
 let sliderIntervals = [];
 for (let i = 0; i < nTrials; i++) sliderIntervals.push(i / (nTrials + 2) * 100);
 
@@ -210,7 +213,7 @@ function loadMain() {
     changePage("page_fs", "page_main", fullScreen = fs);
     metadata["survey_time"] = getTimeStamp(0);
     document.getElementById("progress_outer").style.display = "block";
-    displayCues(data["trials"][trialNum]);
+    displayCues(trials[trialNum]);
     window.addEventListener("keydown", event => {
         if (allowKeypress) {
             if (event.key == "ArrowLeft" || event.key == "ArrowRight") moveSlider(event);
@@ -317,7 +320,7 @@ function nextStimulus(event) {
 
     if (trialNum < nTrials) {
         wait("page_main", duration = 750);
-        displayCues(data["trials"][trialNum]);
+        displayCues(trials[trialNum]);
         sliderMoved = false;
         moveProgressBar(sliderIntervals[trialNum]);
     } else {
