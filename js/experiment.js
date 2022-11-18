@@ -82,7 +82,7 @@ function saveDataWrapper(type = 1) {
         let body = studyID + "_data__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
         saveData(body, data);
     } else if (type == 2) {
-        let body = studyID + "_metadata__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
+        let body = studyID + "_meta__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
         saveData(body, metadata);
     }
 }
