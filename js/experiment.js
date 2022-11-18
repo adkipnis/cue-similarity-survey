@@ -79,19 +79,19 @@ function saveData(body, dictionary) {
 
 
 function saveDataWrapper() {
-    let body = studyID + "_data__subject_id=" + data["subject_id"] + "__start_time=" + data["start_time"];
+    let body = studyID + "_data__subject_id=" + data["subject_id"] + "__start=" + data["start"];
     saveData(body, data);
 }
 
 
 let data = {
     "subject_id": randomID(8),
-    "start_time": getTimeStamp(),
-    "survey_time": "",
+    "start": getTimeStamp(),
     "stim_left": "",
     "stim_right": "",
-    "similarity_judgements": [],
-    "judgement_times": [],
+    "similarity": [],
+    "trial_start": [],
+    "trial_end": [],
     "end_time": "",
     "gender": "",
     "age": "",
@@ -196,6 +196,7 @@ function loadMain() {
     data["survey_time"] = getTimeStamp();
     document.getElementById("progress_outer").style.display = "block";
     displayCues(trials[trialNum]);
+    data["trial_start"].push(getTimeStamp())
     window.addEventListener("keydown", event => {
         if (allowKeypress) {
             if (event.key == "ArrowLeft" || event.key == "ArrowRight") moveSlider(event);
@@ -295,8 +296,8 @@ function nextStimulus(event) {
     event.preventDefault();
     document.getElementById("page_main").style.display = "none";
     let slider = document.getElementById("similarityJudgement");
-    data["similarity_judgements"].push(slider.value);
-    data["judgement_times"].push(getTimeStamp());
+    data["similarity"].push(slider.value);
+    data["trial_end"].push(getTimeStamp());
     slider.value = "51";
     trialNum++;
     clearCanvas();
@@ -309,6 +310,7 @@ function nextStimulus(event) {
             document.getElementById("page_main").style.display = "block";
             allowKeypress = true;
             sliderMoved = false;
+            data["trial_start"].push(getTimeStamp());
         },
             750);
     } else {
