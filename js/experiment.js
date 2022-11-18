@@ -18,8 +18,8 @@ function randomID(length = 32) {
 }
 
 
-function twoPad(n) {
-    return String(n).padStart(2, '0');
+function zeroPad(n, by = 2) {
+    return String(n).padStart(by, '0');
 }
 
 function getTimeStamp(type = "full") {
@@ -35,8 +35,8 @@ function getTimeStamp(type = "full") {
     let minute = date.getMinutes();
     let second = date.getSeconds();
     let ms = date.getMilliseconds();
-    let time_string = [hour, minute, second].map(t => twoPad(t)).join(':');
-    time_string = [time_string, ms].join(".");
+    let time_string = [hour, minute, second].map(t => zeroPad(t)).join(':');
+    time_string = [time_string, zeroPad(ms, by = 3)].join(".");
     if (type == "time") return time_string
 
     return [date_string, time_string].join(" ")
