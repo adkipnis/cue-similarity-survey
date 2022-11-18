@@ -22,24 +22,25 @@ function twoPad(n) {
     return String(n).padStart(2, '0');
 }
 
-
-function getTimeStamp(type = 1) {
+function getTimeStamp(type = "full") {
     let date = new Date();
+
     let year = date.getFullYear();
     let month = date.getMonth();
     let day = date.getDate();
+    let date_string = [year, month, day].join('-');
+    if (type == "date") return date_string
+
     let hour = date.getHours();
     let minute = date.getMinutes();
     let second = date.getSeconds();
     let ms = date.getMilliseconds();
-    let T = [month, day, hour, minute, second].map(t => twoPad(t));
-    if (type == 0) {
-        T.push(ms);
-        return T.slice(2).join('-');
-    }
-    return [year, ...T].join('-');
-}
+    let time_string = [hour, minute, second].map(t => twoPad(t)).join(':');
+    time_string = [time_string, ms].join(".");
+    if (type == "time") return time_string
 
+    return [date_string, time_string].join(" ")
+}
 
 function permute(array) {
     let currentIndex = array.length, randomIndex;
@@ -77,34 +78,25 @@ function saveData(body, dictionary) {
 }
 
 
-function saveDataWrapper(type = 1) {
-    if (type == 1) {
-        let body = studyID + "_data__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
-        saveData(body, data);
-    } else if (type == 2) {
-        let body = studyID + "_meta__subject_id=" + metadata["subject_id"] + "__start_time=" + metadata["start_time"];
-        saveData(body, metadata);
-    }
+function saveDataWrapper() {
+    let body = studyID + "_data__subject_id=" + data["subject_id"] + "__start_time=" + data["start_time"];
+    saveData(body, data);
 }
 
 
-let metadata = {
+let data = {
     "subject_id": randomID(8),
     "start_time": getTimeStamp(),
     "survey_time": "",
+    "stim_left": "",
+    "stim_right": "",
+    "similarity_judgements": [],
+    "judgement_times": [],
     "end_time": "",
     "gender": "",
     "age": "",
     "nationality": "",
     "comments": ""
-}
-
-
-let data = {
-    "stim_left": "",
-    "stim_right": "",
-    "similarity_judgements": [],
-    "judgement_times": [],
 }
 
 
@@ -211,7 +203,7 @@ function loadQuestions() {
 
 function loadMain() {
     changePage("page_fs", "page_main", fullScreen = fs);
-    metadata["survey_time"] = getTimeStamp(0);
+    data["survey_time"] = getTimeStamp();
     document.getElementById("progress_outer").style.display = "block";
     displayCues(trials[trialNum]);
     window.addEventListener("keydown", event => {
@@ -260,13 +252,13 @@ function loadEnd() {
         });
     } else {
         moveProgressBar(100);
-        metadata["gender"] = checkq1.value;
-        metadata["age"] = checkq2;
-        metadata["nationality"] = checkq3;
-        metadata["comments"] = document.getElementById('comments').value;
-        metadata["end_time"] = getTimeStamp(0);
+        data["gender"] = checkq1.value;
+        data["age"] = checkq2;
+        data["nationality"] = checkq3;
+        data["comments"] = document.getElementById('comments').value;
+        data["end_time"] = getTimeStamp();
         changePage("page_questions", "page_end");
-        saveDataWrapper(2);
+        saveDataWrapper();
     }
 }
 
@@ -313,7 +305,7 @@ function nextStimulus(event) {
     event.preventDefault();
     let slider = document.getElementById("similarityJudgement");
     data["similarity_judgements"].push(slider.value);
-    data["judgement_times"].push(getTimeStamp(0));
+    data["judgement_times"].push(getTimeStamp());
     slider.value = "51";
     trialNum++;
     clearCanvas();
@@ -325,7 +317,6 @@ function nextStimulus(event) {
         moveProgressBar(sliderIntervals[trialNum]);
     } else {
         changePage("page_main", "page_questionsintro", timeout = 1000);
-        saveDataWrapper(1);
     }
 }
 
