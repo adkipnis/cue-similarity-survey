@@ -197,16 +197,18 @@ function loadMain() {
     document.getElementById("progress_outer").style.display = "block";
     displayCues(trials[trialNum]);
     data["trial_start"].push(getTimeStamp())
-    window.addEventListener("keydown", event => {
-        if (allowKeypress) {
-            if (event.key == "ArrowLeft" || event.key == "ArrowRight") moveSlider(event);
-            if (event.key == "ArrowUp" || event.key == "ArrowDown") event.preventDefault();
-            if (event.key == " " || event.key == "SpaceBar") {
-                if (sliderMoved) nextStimulus(event);
-                else instruct2moveSlider();
-            }
+    window.addEventListener("keydown", onKeyDown);
+}
+
+function onKeyDown(event) {
+    if (allowKeypress) {
+        if (event.key == "ArrowLeft" || event.key == "ArrowRight") moveSlider(event);
+        if (event.key == "ArrowUp" || event.key == "ArrowDown") event.preventDefault();
+        if (event.key == " " || event.key == "SpaceBar") {
+            if (sliderMoved) nextStimulus(event);
+            else instruct2moveSlider();
         }
-    });
+    }
 }
 
 function fillSelect(id, list) {
@@ -292,7 +294,7 @@ async function instruct2moveSlider() {
 }
 
 
-function nextStimulus(event) {
+function nextStimulus(event, timeout = 750) {
     event.preventDefault();
     document.getElementById("page_main").style.display = "none";
     let slider = document.getElementById("similarityJudgement");
@@ -312,13 +314,14 @@ function nextStimulus(event) {
             sliderMoved = false;
             data["trial_start"].push(getTimeStamp());
         },
-            750);
+            timeout);
     } else {
+        window.removeEventListener("keydown", onKeyDown);
         setTimeout(() => {
             document.getElementById("page_questionsintro").style.display = "block";
             sliderMoved = false;
         },
-            1000);
+            2 * timeout);
     }
 }
 
