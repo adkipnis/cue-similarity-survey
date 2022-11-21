@@ -271,7 +271,7 @@ function moveProgressBar(goal_width = 100) {
 }
 
 
-function moveSlider(event, by = 2.5) {
+function moveSlider(event, by = 2) {
     let slider = document.getElementById("similarityJudgement");
     if (event.key == "ArrowLeft") {
         slider.value = Math.max(0, parseInt(slider.value) - by);
