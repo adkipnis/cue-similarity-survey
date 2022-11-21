@@ -1,7 +1,7 @@
 // Author: Alex Kipnis
 const studyID = "cue-sim";
 const fs = true;
-const nCues = 10;
+const nCues = 4;
 let allowKeypress = true;
 let sliderMoved = false;
 let trialNum = 0;
@@ -271,7 +271,7 @@ function moveProgressBar(goal_width = 100) {
 }
 
 
-function moveSlider(event, by = 5) {
+function moveSlider(event, by = 2.5) {
     let slider = document.getElementById("similarityJudgement");
     if (event.key == "ArrowLeft") {
         slider.value = Math.max(0, parseInt(slider.value) - by);
