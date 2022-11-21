@@ -8,3 +8,5 @@ data/cue-sim_data__subject_id=whef179w__start=2022-10-18 17:11:36.692.json
 data/participant_info.csv
 data/trials.csv
 data/.Rhistory
+data/.RData
+data/cp.r
