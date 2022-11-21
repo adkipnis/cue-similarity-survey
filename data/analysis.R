@@ -23,12 +23,18 @@ if (load_raw) {
     meta = bind_rows(meta, tail(tmp, n = 1))
   }
   
+  # --- typecast
+  full$similarity = as.numeric(full$similarity)
+  
+  
   # --- Infer Durations
   format = "%Y-%m-%d %H:%M:%OS"
   full$rt = as.numeric(difftime(strptime(full$trial_end, format),
-                              strptime(full$trial_start, format))) 
+                              strptime(full$trial_start, format)),
+                       units="secs") 
   meta$total_duration = as.numeric(difftime(strptime(meta$trial_end, format),
-                                      strptime(meta$start, format))) 
+                                            strptime(meta$start, format)),
+                                   units="secs") 
   
   # --- Remove irrelevant info
   trials = subset(full, select=c(
@@ -49,7 +55,7 @@ if (load_raw) {
 
 # --- Discard trials / participants
 if (filter_trials){
-  min_total_duration = 10 # number of trials x 1s
+  min_total_duration = max(full$trial_num) # number of trials x 1s
   min_trial_duration = 0.5 # in seconds
   good_subjects = metadata$subject_id[metadata$total_duration >= min_total_duration]
   trials = trials[trials$subject_id %in% good_subjects,]
@@ -59,14 +65,20 @@ if (filter_trials){
 
 # ==== Main Analysis ===========================================================
 # --- Retest Reliability
-sim_wide = trials %>% rowwise() %>% mutate(type = paste(
-  min(stim_left, stim_right), max(stim_left, stim_right)),
+sim_wide = trials %>% rowwise() %>% mutate(
+  type = paste(min(stim_left, stim_right), max(stim_left, stim_right)),
   version = if (min(stim_left, stim_right) == stim_left) "LR" else "RL") %>%
   pivot_wider(
     id_cols = c(subject_id, type),
     names_from = version, 
     values_from = similarity
   )
+
+# per participant
+sim_wide %>% group_by(subject_id) %>% summarize(cor=cor(LR, RL))
+
+# per pair
+sim_wide %>% group_by(type) %>% summarize(cor=cor(LR, RL))
 
 # --- Similarity Matrix
 # TODO
