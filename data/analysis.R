@@ -6,6 +6,7 @@ rm(list = ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 library(dplyr)
 library(tidyr)
+library(corrplot)
 load_raw = T
 filter_trials = F
 
@@ -64,7 +65,7 @@ if (filter_trials){
 
 
 # ==== Main Analysis ===========================================================
-# --- Retest Reliability
+# --- Reliability
 sim_wide = trials %>% rowwise() %>% mutate(
   type = paste(min(stim_left, stim_right), max(stim_left, stim_right)),
   version = if (min(stim_left, stim_right) == stim_left) "LR" else "RL") %>%
@@ -72,19 +73,82 @@ sim_wide = trials %>% rowwise() %>% mutate(
     id_cols = c(subject_id, type),
     names_from = version, 
     values_from = similarity
-  )
+  ) %>% mutate(mean_sim = (LR+RL)/2)
+tibble(sim_wide)
 
-# per participant
+# r per participants -> "how precise is each participant's judgement"
 sim_wide %>% group_by(subject_id) %>% summarize(cor=cor(LR, RL))
 
-# per pair
-sim_wide %>% group_by(type) %>% summarize(cor=cor(LR, RL))
+# median abs difference per pair -> "how stable is the judgement over participants"
+# 1/sd per pair -> "how much did participants agree in their judgments"
+sim_agg = sim_wide %>% group_by(type) %>% summarize(sim = median(mean_sim),
+                                                    mad = median(abs(LR - RL)),
+                                                    agree = 1/sd(mean_sim))
 
 # --- Similarity Matrix
-# TODO
+df2heatmat = function(sim_agg) {
+  n_stim = length(unique(trials$stim_left))
+  
+  # init matrices
+  sim_mat = matrix(0, n_stim, n_stim) + diag(100, n_stim, n_stim)
+  mad_mat = matrix(0, n_stim, n_stim)
+  agree_mat = matrix(0, n_stim, n_stim) + diag(1, n_stim, n_stim)
+  
+  # get matrix indices (starting at 1) per trial type
+  idx = t(sapply(strsplit(sim_agg$type, ' '), as.integer) + 1)
+  
+  # helper function
+  add2matrix = function(mat, i, val, center = F, range=c(0,1)){
+    if (center) val = 2 * (val-mean(range))
+    val_norm = val/(range[2]-range[1])
+    mat[idx[i,1], idx[i,2]] = val_norm
+    mat[idx[i,2], idx[i,1]] = val_norm
+    return(mat)
+  }
+  
+  # insert normalized values symmetrically into corresponding matrix
+  for (i in 1:nrow(sim_agg)){
+    sim_mat = add2matrix(sim_mat, i, sim_agg[i,]$sim)
+    mad_mat = add2matrix(mad_mat, i, sim_agg[i,]$mad)
+    agree_mat = add2matrix(agree_mat, i, sim_agg[i,]$agree)
+  }
+  
+  return(list("sim_mat" = sim_mat, "mad_mat" = mad_mat, "agree_mat" = agree_mat))
+}
+
+matrices = df2heatmat(sim_agg)
 
 # --- Plot Matrix
-# TODO
+corrplot(matrices$sim_mat,
+         type = "upper",
+         method = "color",
+         is.corr = F, col.lim = c(0,100),
+         cl.ratio = 0.2,
+         tl.srt = 45,
+         col = COL2("RdYlBu"),
+         addgrid.col = "black",
+         tl.pos = F)
+
+corrplot(matrices$mad_mat,
+         type = "upper",
+         method = "color",
+         is.corr = F, col.lim = c(0,100),
+         cl.ratio = 0.2,
+         tl.srt = 45,
+         col = COL1("Reds"),
+         addgrid.col = 'black',
+         tl.pos = F)
+
+corrplot(matrices$agree_mat,
+         type = "upper",
+         method = "color",
+         is.corr = F, col.lim = c(0,1),
+         cl.ratio = 0.2,
+         tl.srt = 45,
+         col = COL1("Greens"),
+         addgrid.col = 'black',
+         tl.pos = F)
+
 
 # --- Plot metadata distribution
 # TODO
