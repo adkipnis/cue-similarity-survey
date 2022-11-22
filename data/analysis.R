@@ -176,4 +176,15 @@ ggplot(data=retest_rel, aes(x=subject_id, y=cor, fill=subject_id))+
         plot.title = element_text(size=20,face="bold", margin = margin(b = 20), hjust = 0.5),
   ) + theme(legend.position="none")
 
+# --- Plot metadata distribution
+# Gender
+metadata %>% group_by(gender) %>% tally() %>%
+  ggplot(aes(x="", y=n, fill=gender)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  geom_text(aes(label = n),
+            position = position_stack(vjust = 0.5),
+            col = "white",size=6) +
+  scale_fill_brewer(name = "Gender", palette="Set1") +
+  theme_void()
 
