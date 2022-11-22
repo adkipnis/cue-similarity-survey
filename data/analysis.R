@@ -159,3 +159,21 @@ corrplot(matrices$agree_mat,
          tl.col = "white"
          )
 
+# --- Test-Retest reliability
+ggplot(data=retest_rel, aes(x=subject_id, y=cor, fill=subject_id))+
+  geom_bar(stat="identity")+
+  scale_y_continuous(expand = c(0, 0), breaks=seq(0,1,0.2), limits=c(0.0, 1.0))+
+  scale_fill_brewer(palette="Set2")+
+  ggtitle("Retest Reliability") +
+  xlab("Subject ID") + ylab("Pearson's r") +
+  theme_minimal()+
+  theme(axis.line = element_line(colour = "black", size = 0.5, linetype = "solid"),
+        axis.text = element_text(size=12),
+        axis.text.x = element_text(vjust=-1),
+        axis.title.x = element_text(margin = margin(t = 20)),
+        axis.title.y = element_text(margin = margin(r = 20)),
+        axis.title = element_text(size=14,face="bold"),
+        plot.title = element_text(size=20,face="bold", margin = margin(b = 20), hjust = 0.5),
+  ) + theme(legend.position="none")
+
+
