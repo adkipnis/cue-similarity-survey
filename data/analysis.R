@@ -6,9 +6,11 @@ rm(list = ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 library(dplyr)
 library(tidyr)
+library(ggplot2)
 library(corrplot)
 load_raw = T
 filter_trials = F
+
 
 # ==== Preprocessing ===========================================================
 if (load_raw) {
@@ -77,7 +79,7 @@ sim_wide = trials %>% rowwise() %>% mutate(
 tibble(sim_wide)
 
 # r per participants -> "how precise is each participant's judgement"
-sim_wide %>% group_by(subject_id) %>% summarize(cor=cor(LR, RL))
+retest_rel = sim_wide %>% group_by(subject_id) %>% summarize(cor=cor(LR, RL))
 
 # median abs difference per pair -> "how stable is the judgement over participants"
 # 1/sd per pair -> "how much did participants agree in their judgments"
@@ -85,7 +87,7 @@ sim_agg = sim_wide %>% group_by(type) %>% summarize(sim = median(mean_sim),
                                                     mad = median(abs(LR - RL)),
                                                     agree = 1/sd(mean_sim))
 
-# --- Similarity Matrix
+# --- Prepare Similarity Matrix
 df2heatmat = function(sim_agg) {
   n_stim = length(unique(trials$stim_left))
   
@@ -115,10 +117,11 @@ df2heatmat = function(sim_agg) {
   
   return(list("sim_mat" = sim_mat, "mad_mat" = mad_mat, "agree_mat" = agree_mat))
 }
-
 matrices = df2heatmat(sim_agg)
 
-# --- Plot Matrix
+
+# ==== Plots ===================================================================
+# --- Heatmaps
 corrplot(matrices$sim_mat,
          type = "upper",
          method = "color",
@@ -127,7 +130,9 @@ corrplot(matrices$sim_mat,
          tl.srt = 45,
          col = COL2("RdYlBu"),
          addgrid.col = "black",
-         tl.pos = F)
+         tl.pos = "d",
+         tl.col = "white"
+         )
 
 corrplot(matrices$mad_mat,
          type = "upper",
@@ -137,7 +142,9 @@ corrplot(matrices$mad_mat,
          tl.srt = 45,
          col = COL1("Reds"),
          addgrid.col = 'black',
-         tl.pos = F)
+         tl.pos = "d",
+         tl.col = "white"
+         )
 
 corrplot(matrices$agree_mat,
          type = "upper",
@@ -146,9 +153,9 @@ corrplot(matrices$agree_mat,
          cl.ratio = 0.2,
          tl.srt = 45,
          col = COL1("Greens"),
-         addgrid.col = 'black',
-         tl.pos = F)
+         addgrid.col = "black",
+         # tl.pos = F,
+         tl.pos = "d",
+         tl.col = "white"
+         )
 
-
-# --- Plot metadata distribution
-# TODO
