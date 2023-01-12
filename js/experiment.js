@@ -1,5 +1,7 @@
 // Author: Alex Kipnis
 const studyID = "cue-sim";
+const urlParams = new URLSearchParams(window.location.search);
+const prolificID = urlParams.get('PROLIFIC_PID')
 const fs = true;
 const nCues = 10;
 let allowKeypress = true;
@@ -86,6 +88,7 @@ function saveDataWrapper() {
 
 let data = {
     "subject_id": randomID(8),
+    "prolific_id": prolificID ? prolificID : "NA",
     "start": getTimeStamp(),
     "stim_left": "",
     "stim_right": "",
