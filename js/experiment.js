@@ -247,17 +247,21 @@ function loadEnd() {
             buttons: ["OK", false]
         });
     } else {
-        moveProgressBar(100);
         data["gender"] = checkq1.value;
         data["age"] = checkq2;
         data["nationality"] = checkq3;
         data["comments"] = document.getElementById('comments').value;
         data["end_time"] = getTimeStamp();
-        changePage("page_questions", "page_end");
         saveDataWrapper();
+        finalize();
     }
 }
 
+function finalize() {
+    moveProgressBar(100);
+    document.getElementById('completion_code').textContent = "C16B3I27";
+    changePage("page_questions", "page_end");
+}
 
 function moveProgressBar(goal_width = 100) {
     let bar = document.getElementById("progress");
