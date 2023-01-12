@@ -46,21 +46,13 @@ if (load_raw) {
   units = "secs")
   
   # --- Remove irrelevant info
-  trials = subset(full,
-                  select = c(trial_num, subject_id, stim_left, stim_right, similarity, rt))
+  trials = subset(
+    full,
+    select = c(trial_num, subject_id, stim_left, stim_right, similarity, rt))
   metadata = subset(
     meta,
-    select = -c(
-      start,
-      stim_left,
-      stim_right,
-      similarity,
-      trial_start,
-      trial_end,
-      end_time,
-      survey_time
-    )
-  )
+    select = -c(start, stim_left, stim_right, similarity, trial_start,
+                trial_end, end_time, survey_time))
   rm(json_list, tmp, meta)
   
   # --- Save aggregated data
@@ -194,7 +186,7 @@ corrplot(
 
 # --- Test-Retest reliability
 ggplot(data = retest_rel, aes(x = subject_id, y = cor, fill = subject_id)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", color = "#333300") +
   scale_y_continuous(
     expand = c(0, 0),
     breaks = seq(0, 1, 0.2),
@@ -253,7 +245,7 @@ metadata %>% group_by(gender) %>% tally() %>%
 
 # Age
 ggplot(data = metadata, aes(x = age)) +
-  geom_histogram(color = "black", fill = "gray") +
+  geom_histogram(color = "#333300", fill = "gray") +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 20, 1)) +
   scale_x_continuous(breaks = seq(18, 99, 1)) +
   ggtitle("Sample Age Distribution") +
