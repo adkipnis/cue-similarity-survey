@@ -37,7 +37,7 @@
         <center>
             <h1>Welcome!</h1>
             <h3>
-                If you want to participate in this experiment, please press the button
+                If you want to participate in this experiment and are using a computer, please press the button
                 below.<br>If you have any dark screen filter active on your browser, please turn it off.
                 <!-- <br>The experiment will enter full screen mode upon starting. -->
             </h3>
@@ -194,9 +194,12 @@
         <center>
             <h3>
                 Awesome, thanks for agreeing to participate!<br><br>
-                <b>Task instructions:</b>
-                You will be presented with pairs of images.<br>
-                Your task is to rate how similar the images are on a scale from 0% to 100%.<br>
+            </h3>
+            <h1>Task instructions:</h1> <br>
+            <h3>
+                You will be presented with pairs of images. Your task is to rate<br>
+                how similar the images <i>appear to you</i> on a scale from 0% to 100%.<br>
+                As this is subjective, there is no correct or wrong answer. <br>
                 Use the <i>keyboard arrows</i> (or the <i>mouse</i>) to move the slider.<br>
                 To submit your rating, press the <i>spacebar</i>.<br><br>
                 The experiment will enter full screen mode once you
@@ -240,38 +243,41 @@
     <!-- Metadata -->
     <div id="page_questionsintro" class="center-pre" style="display:none;">
         <center>
-            <h1>Final Questions</h1>
-            <h3 style="width:35%">Thank you for completing the task. In the following section,
+            <h3 style="width:35%">Thank you for completing the main task! <br>
+                In the following section,
                 please answer some questions about yourself
                 and your experience with the task.
                 This helps our research.</h3>
             <br>
-            <button class="buttonG" onclick="loadQuestions()">Continue</button>
+            <button class="buttonG" onclick="closeFullscreen(); loadQuestions()">Continue</button>
     </div>
 
-    <div id="page_questions" class="center-pre" style="display:none">
+    <div id="page_questions" style="display:none">
         <center>
+            <br><br><br>
+            <h1>Closing questions...</h1><br>
             <h4>What gender do you identify with?</h4>
             <label><input type="radio" name="q1" value="female">&nbspfemale</label>
             <label><input type="radio" name="q1" value="male">&nbspmale</label>
             <label><input type="radio" name="q1" value="other">&nbspother</label>
             <label><input type="radio" name="q1" value="nosay">&nbspprefer not to say</label>
-            <br><br><br>
+            <br><br>
             <h4>What is your age?</h4>
             <select id="age" name="age">
                 <option value="">-- select one --</option>
             </select>
-            <br><br><br>
+            <br><br>
             <h4>What is your nationality?</h4>
             <select id="nationality" name="nationality">
                 <option value="">-- select one --</option>
             </select>
-            <br><br><br>
+            <br><br>
             <h4>Is there anything else you would like to tell us?</h4>
             <textarea name="Text4" id="comments" placeholder="During the task I noticed that..." cols="60%"
                 rows="6"></textarea>
-            <br><br><br>
+            <br><br>
             <button class="buttonN" onclick="loadEnd()">Finish</button>
+            <br><br>
     </div>
 
     <!-- Exit, Timeout, End -->
