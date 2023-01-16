@@ -28,7 +28,7 @@ function getTimeStamp(type = "full") {
     let date = new Date();
 
     let year = date.getFullYear();
-    let month = date.getMonth();
+    let month = date.getMonth() + 1;
     let day = date.getDate();
     let date_string = [year, month, day].join('-');
     if (type == "date") return date_string
