@@ -94,7 +94,7 @@ retest_rel = sim_wide %>% group_by(subject_id) %>% summarize(cor = cor(LR, RL))
 sim_agg = sim_wide %>% group_by(type) %>% summarize(
   sim = median(mean_sim),
   mad = median(abs(LR - RL)),
-  agree = 1 / sd(mean_sim)
+  agree = 1 / sd(mean_sim) # of course only for n>1
 )
 
 # --- Prepare Similarity Matrix
@@ -269,3 +269,4 @@ ggplot(data = metadata, aes(x = age)) +
       hjust = 0.5
     ),
   ) + theme(legend.position = "none")
+
