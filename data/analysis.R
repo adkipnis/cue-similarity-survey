@@ -8,6 +8,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(corrplot)
+library(viridis)
 load_raw = T
 filter_trials = F
 
@@ -76,6 +77,7 @@ if (filter_trials) {
 
 # ==== Main Analysis ===========================================================
 # --- Reliability
+# aggregate duplicate trials 
 sim_wide = trials %>% rowwise() %>% mutate(
   type = paste(min(stim_left, stim_right), max(stim_left, stim_right)),
   version = if (min(stim_left, stim_right) == stim_left) "LR" else "RL") %>%
@@ -89,7 +91,7 @@ tibble(sim_wide)
 # r per participants -> "how precise is each participant's judgement"
 retest_rel = sim_wide %>% group_by(subject_id) %>% summarize(cor = cor(LR, RL))
 
-# median abs difference per pair -> "how stable is the judgement over participants"
+# median abs difference per pair -> "how unstable is the judgement over participants"
 # 1/sd per pair -> "how much did participants agree in their judgments"
 sim_agg = sim_wide %>% group_by(type) %>% summarize(
   sim = median(mean_sim),
@@ -141,8 +143,10 @@ matrices = df2heatmat(sim_agg)
 
 # ==== Plots ===================================================================
 # --- Heatmaps
+pdf(file = "median_sim_rating.pdf")
 corrplot(
   matrices$sim_mat,
+  # title = "Median similarity rating", 
   type = "upper",
   method = "color",
   is.corr = F,
@@ -152,9 +156,11 @@ corrplot(
   col = COL2("RdYlBu"),
   addgrid.col = "black",
   tl.pos = "d",
-  tl.col = "white"
+  tl.col = "white",
 )
+dev.off()
 
+pdf(file = "median_l1.pdf")
 corrplot(
   matrices$mad_mat,
   type = "upper",
@@ -168,7 +174,9 @@ corrplot(
   tl.pos = "d",
   tl.col = "white"
 )
+dev.off()
 
+pdf(file = "rating_consens.pdf")
 corrplot(
   matrices$agree_mat,
   type = "upper",
@@ -183,6 +191,7 @@ corrplot(
   tl.pos = "d",
   tl.col = "white"
 )
+dev.off()
 
 # --- Test-Retest reliability
 ggplot(data = retest_rel, aes(x = subject_id, y = cor, fill = subject_id)) +
@@ -192,7 +201,9 @@ ggplot(data = retest_rel, aes(x = subject_id, y = cor, fill = subject_id)) +
     breaks = seq(0, 1, 0.2),
     limits = c(0.0, 1.0)
   ) +
-  scale_fill_brewer(palette = "Set2") +
+  # scale_fill_brewer(palette = "Set2") +
+  scale_color_viridis(discrete = TRUE, option = "D")+
+  scale_fill_viridis(discrete = TRUE) +
   ggtitle("Retest Reliability") +
   xlab("Subject ID") + ylab("Pearson's r") +
   theme_minimal() +
@@ -202,8 +213,8 @@ ggplot(data = retest_rel, aes(x = subject_id, y = cor, fill = subject_id)) +
       size = 0.5,
       linetype = "solid"
     ),
-    axis.text = element_text(size = 12),
-    axis.text.x = element_text(vjust = -1),
+    axis.text = element_text(size = 10),
+    axis.text.x = element_text(hjust = 1, angle = 90),
     axis.title.x = element_text(margin = margin(t = 20)),
     axis.title.y = element_text(margin = margin(r = 20)),
     axis.title = element_text(size = 14, face = "bold"),
@@ -214,6 +225,7 @@ ggplot(data = retest_rel, aes(x = subject_id, y = cor, fill = subject_id)) +
       hjust = 0.5
     ),
   ) + theme(legend.position = "none")
+ggsave(file="test-retest-reliability.pdf")
 
 # --- Plot metadata distribution
 # Gender
@@ -242,6 +254,7 @@ metadata %>% group_by(gender) %>% tally() %>%
       hjust = 0.5
     )
   )
+ggsave(file="gender-pie.pdf")
 
 # Age
 ggplot(data = metadata, aes(x = age)) +
@@ -269,4 +282,4 @@ ggplot(data = metadata, aes(x = age)) +
       hjust = 0.5
     ),
   ) + theme(legend.position = "none")
-
+ggsave(file="age-distribution.pdf")
