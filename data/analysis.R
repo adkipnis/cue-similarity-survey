@@ -11,6 +11,7 @@ library(corrplot)
 library(viridis)
 load_raw = T
 filter_trials = F
+filter_subjects = T
 
 
 # ==== Preprocessing ===========================================================
@@ -91,6 +92,13 @@ tibble(sim_wide)
 # r per participants -> "how precise is each participant's judgement"
 retest_rel = sim_wide %>% group_by(subject_id) %>% summarize(cor = cor(LR, RL))
 
+if (filter_subjects){
+  unreliable_subjects = retest_rel[retest_rel["cor"] < 0.2,]$subject_id
+  sim_wide = sim_wide[!sim_wide$subject_id %in% unreliable_subjects, ]
+  metadata = metadata[!metadata$subject_id %in% unreliable_subjects, ]
+  retest_rel = retest_rel[!retest_rel$subject_id %in% unreliable_subjects, ]
+}
+
 # median abs difference per pair -> "how unstable is the judgement over participants"
 # 1/sd per pair -> "how much did participants agree in their judgments"
 sim_agg = sim_wide %>% group_by(type) %>% summarize(
@@ -140,6 +148,18 @@ df2heatmat = function(sim_agg) {
 }
 matrices = df2heatmat(sim_agg)
 
+# ==== Cue Selection ===========================================================
+s = matrices$sim_mat - diag(10)*100
+kept = letters[1:ncol(s)]
+while (ncol(s) > 6){
+  # row and col of max
+  rc = which(s == max(s), arr.ind = T)[1,]
+  # if the first item has bigger sum median similarity, remove first it, else the other
+  remove_this = ifelse(sum(s[rc[1],]) > sum(s[rc[2],]), rc[1], rc[2])
+  s = s[-remove_this, -remove_this]
+  kept = kept[-remove_this]
+}
+kept
 
 # ==== Plots ===================================================================
 # --- Heatmaps
