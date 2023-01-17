@@ -1,18 +1,8 @@
-css/rangeslider.css
-flexbox-test.html
-flexbox.css
-jsp-test.html
-data/cue-sim_data__subject_id=1v2hk2j3__start=2022-10-18 16:46:14.46.json
-data/cue-sim_data__subject_id=hd4pxu12__start=2022-10-18 16:53:48.691.json
-data/cue-sim_data__subject_id=whef179w__start=2022-10-18 17:11:36.692.json
-data/participant_info.csv
-data/trials.csv
+data/cue*.json
+data/*.pdf
+data/*.csv
 data/.Rhistory
 data/.RData
-data/cp.r
 users.txt
-prolific/Invoice-41E672B8-0012.pdf
+prolific/*
 .gitignore
-prolific/prolific how to.pdf
-prolific/Kostenberechnung.pdf
-prolific/prolific_costs.odt
